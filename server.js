@@ -5,6 +5,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 import OpenAI from "openai";
+import ffmpeg from "fluent-ffmpeg";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -16,7 +17,7 @@ const openai = new OpenAI({
 });
 
 app.get("/", (req, res) => {
-  res.send("🎧 Smart Vision WS + Whisper v1.0 stable");
+  res.send("🎧 Smart Vision WS + Whisper v1.1 (whisper-safe)");
 });
 
 wss.on("connection", (ws) => {
@@ -27,15 +28,13 @@ wss.on("connection", (ws) => {
 
   ws.on("message", async (data) => {
     try {
-      // получаем аудио-фрагменты
       if (data instanceof Buffer) {
         audioChunks.push(data);
 
-        // каждые 5 секунд отправляем в Whisper
+        // каждые 5 секунд отправляем буфер в Whisper
         if (Date.now() - lastProcessed > 5000) {
           const merged = Buffer.concat(audioChunks);
 
-          // игнорируем слишком маленькие куски
           if (merged.length < 5000) {
             console.log("⚠️ Too small chunk, skipping...");
             audioChunks = [];
@@ -43,15 +42,28 @@ wss.on("connection", (ws) => {
             return;
           }
 
-          const tempPath = path.join(__dirname, "temp.webm");
-          fs.writeFileSync(tempPath, merged);
+          const tempWebm = path.join(__dirname, "temp.webm");
+          const tempWav = path.join(__dirname, "temp.wav");
+          fs.writeFileSync(tempWebm, merged);
 
           ws.send("🌀 Processing speech...");
           console.log(`🎧 Processing ${merged.length} bytes`);
 
           try {
+            // конвертация webm → wav
+            await new Promise((resolve, reject) => {
+              ffmpeg(tempWebm)
+                .noVideo()
+                .audioCodec("pcm_s16le")
+                .audioChannels(1)
+                .audioFrequency(16000)
+                .save(tempWav)
+                .on("end", resolve)
+                .on("error", reject);
+            });
+
             const transcript = await openai.audio.transcriptions.create({
-              file: fs.createReadStream(tempPath),
+              file: fs.createReadStream(tempWav),
               model: "whisper-1",
               response_format: "text",
             });
@@ -63,13 +75,14 @@ wss.on("connection", (ws) => {
             ws.send("❌ Whisper error: " + whisperErr.message);
           }
 
-          fs.unlinkSync(tempPath);
+          // очистка временных файлов
+          [tempWebm, tempWav].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
+
           audioChunks = [];
           lastProcessed = Date.now();
         }
       } else {
-        const text = data.toString();
-        ws.send(`Echo: ${text}`);
+        ws.send("Echo: " + data.toString());
       }
     } catch (err) {
       console.error("❌ General error:", err);
@@ -77,32 +90,13 @@ wss.on("connection", (ws) => {
     }
   });
 
-  // финальная обработка при закрытии соединения
   ws.on("close", async () => {
     console.log("❌ Client disconnected");
-    if (audioChunks.length > 0) {
-      const merged = Buffer.concat(audioChunks);
-      if (merged.length > 5000) {
-        const tempPath = path.join(__dirname, "final.webm");
-        fs.writeFileSync(tempPath, merged);
-        try {
-          const transcript = await openai.audio.transcriptions.create({
-            file: fs.createReadStream(tempPath),
-            model: "whisper-1",
-            response_format: "text",
-          });
-          console.log("🗣️ Final:", transcript);
-        } catch (err) {
-          console.error("❌ Final whisper error:", err.message);
-        }
-        fs.unlinkSync(tempPath);
-      }
-    }
     audioChunks = [];
   });
 });
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () =>
-  console.log(`🚀 Smart Vision WS + Whisper v1.0 running on port ${PORT}`)
+  console.log(`🚀 Smart Vision WS + Whisper v1.1 running on port ${PORT}`)
 );
