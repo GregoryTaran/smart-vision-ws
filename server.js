@@ -13,13 +13,23 @@ app.get("/", (req, res) => {
 wss.on("connection", (ws) => {
   console.log("✅ Client connected");
 
-  ws.on("message", (message) => {
-    console.log("📩 Received:", message.toString());
-    ws.send(`Echo: ${message}`);
+  ws.on("message", (data) => {
+    // Проверяем, бинарные ли данные (аудио)
+    if (data instanceof Buffer) {
+      const size = data.length;
+      console.log(`🎧 Received audio chunk (${size} bytes)`);
+      ws.send(`✅ Received ${size} bytes`);
+    } else {
+      const text = data.toString();
+      console.log(`💬 Text: ${text}`);
+      ws.send(`Echo: ${text}`);
+    }
   });
 
   ws.on("close", () => console.log("❌ Client disconnected"));
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 Smart Vision WS server running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`🚀 Smart Vision WS server running on port ${PORT}`)
+);
