@@ -11,49 +11,71 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-// подключаем Whisper
+// Whisper init
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // добавишь ключ в Render → Environment
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 app.get("/", (req, res) => {
-  res.send("🎧 Smart Vision WS + Whisper ready!");
+  res.send("🎧 Smart Vision WS + Whisper (buffer mode) ready!");
 });
 
 wss.on("connection", (ws) => {
   console.log("✅ Client connected");
 
+  let audioChunks = [];
+  let lastProcessed = Date.now();
+
   ws.on("message", async (data) => {
     try {
-      // если аудио
+      // Аудио-чанк
       if (data instanceof Buffer) {
-        const tempPath = path.join(__dirname, "temp.webm");
-        fs.writeFileSync(tempPath, data);
+        audioChunks.push(data);
 
-        // Отправляем в Whisper
-        const transcript = await openai.audio.transcriptions.create({
-          file: fs.createReadStream(tempPath),
-          model: "whisper-1",
-          response_format: "text",
-        });
+        // каждые 5 сек — отправляем в Whisper
+        if (Date.now() - lastProcessed > 5000) {
+          const merged = Buffer.concat(audioChunks);
+          const tempPath = path.join(__dirname, "temp.webm");
+          fs.writeFileSync(tempPath, merged);
 
-        console.log("🗣️ Whisper:", transcript);
-        ws.send(`📝 ${transcript}`);
-        fs.unlinkSync(tempPath);
+          ws.send("🌀 Processing speech...");
+          console.log(`🎧 Processing ${merged.length} bytes`);
+
+          try {
+            const transcript = await openai.audio.transcriptions.create({
+              file: fs.createReadStream(tempPath),
+              model: "whisper-1",
+              response_format: "text",
+            });
+
+            ws.send("📝 " + transcript);
+            console.log("🗣️ Whisper:", transcript);
+          } catch (whisperErr) {
+            console.error("❌ Whisper error:", whisperErr.message);
+            ws.send("❌ Whisper error: " + whisperErr.message);
+          }
+
+          fs.unlinkSync(tempPath);
+          audioChunks = [];
+          lastProcessed = Date.now();
+        }
       } else {
         const text = data.toString();
         ws.send(`Echo: ${text}`);
       }
     } catch (err) {
-      console.error("❌ Whisper error:", err);
+      console.error("❌ General error:", err);
       ws.send("❌ Error processing audio");
     }
   });
 
-  ws.on("close", () => console.log("❌ Client disconnected"));
+  ws.on("close", () => {
+    console.log("❌ Client disconnected");
+    audioChunks = [];
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () =>
-  console.log(`🚀 Smart Vision WS + Whisper running on port ${PORT}`)
+  console.log(`🚀 Smart Vision WS + Whisper buffer running on port ${PORT}`)
 );
