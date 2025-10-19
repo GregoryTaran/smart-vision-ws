@@ -17,7 +17,7 @@ const openai = new OpenAI({
 });
 
 app.get("/", (req, res) => {
-  res.send("🎧 Smart Vision WS + Whisper v1.1 (whisper-safe)");
+  res.send("🎧 Smart Vision WS + Whisper v1.2 (whisper-safe+)");
 });
 
 wss.on("connection", (ws) => {
@@ -35,7 +35,7 @@ wss.on("connection", (ws) => {
         if (Date.now() - lastProcessed > 5000) {
           const merged = Buffer.concat(audioChunks);
 
-          if (merged.length < 5000) {
+          if (merged.length < 8000) {
             console.log("⚠️ Too small chunk, skipping...");
             audioChunks = [];
             lastProcessed = Date.now();
@@ -49,19 +49,33 @@ wss.on("connection", (ws) => {
           ws.send("🌀 Processing speech...");
           console.log(`🎧 Processing ${merged.length} bytes`);
 
+          // ждём 200 мс, чтобы файл дописался полностью
+          await new Promise((r) => setTimeout(r, 200));
+
+          // проверяем целостность
+          const stats = fs.statSync(tempWebm);
+          if (!stats.size || stats.size < 10000) {
+            console.log("⚠️ Skipping incomplete WebM chunk");
+            [tempWebm].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
+            audioChunks = [];
+            lastProcessed = Date.now();
+            return;
+          }
+
           try {
-            // конвертация webm → wav
+            // 🔁 конвертация webm → wav
             await new Promise((resolve, reject) => {
               ffmpeg(tempWebm)
                 .noVideo()
                 .audioCodec("pcm_s16le")
                 .audioChannels(1)
                 .audioFrequency(16000)
-                .save(tempWav)
                 .on("end", resolve)
-                .on("error", reject);
+                .on("error", reject)
+                .save(tempWav);
             });
 
+            // 🎙️ Распознавание через Whisper
             const transcript = await openai.audio.transcriptions.create({
               file: fs.createReadStream(tempWav),
               model: "whisper-1",
@@ -75,8 +89,10 @@ wss.on("connection", (ws) => {
             ws.send("❌ Whisper error: " + whisperErr.message);
           }
 
-          // очистка временных файлов
-          [tempWebm, tempWav].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
+          // 🧹 Очистка временных файлов
+          [tempWebm, tempWav].forEach(
+            (f) => fs.existsSync(f) && fs.unlinkSync(f)
+          );
 
           audioChunks = [];
           lastProcessed = Date.now();
@@ -90,7 +106,7 @@ wss.on("connection", (ws) => {
     }
   });
 
-  ws.on("close", async () => {
+  ws.on("close", () => {
     console.log("❌ Client disconnected");
     audioChunks = [];
   });
@@ -98,5 +114,5 @@ wss.on("connection", (ws) => {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () =>
-  console.log(`🚀 Smart Vision WS + Whisper v1.1 running on port ${PORT}`)
+  console.log(`🚀 Smart Vision WS + Whisper v1.2 running on port ${PORT}`)
 );
