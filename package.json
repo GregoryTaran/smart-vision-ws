@@ -9,7 +9,9 @@
   "dependencies": {
     "express": "^5.1.0",
     "ws": "^8.18.3",
-    "openai": "^4.68.4"
+    "openai": "^4.68.4",
+    "fluent-ffmpeg": "^2.1.2"
   }
 }
+
 
