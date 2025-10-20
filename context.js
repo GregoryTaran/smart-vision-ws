@@ -11,7 +11,7 @@ const logEl = document.getElementById("log");
 function log(msg) {
   const linked = msg.replace(
     /(https?:\/\/[^\s]+)/g,
-    (url) => `<a href="${url}" target="_blank">${url}</a>`
+    (url) => `<a href="\${url}" target="_blank">\${url}</a>`
   );
   const line = document.createElement("div");
   line.innerHTML = linked;
@@ -146,9 +146,10 @@ document.getElementById("stop").onclick = () => {
 
       log("🧩 Отправляем запрос на объединение...");
 
-      const res = await fetch(`/merge?session=${encodeURIComponent(sessionId)}`);
+      const res = await fetch(`/merge?session=\${encodeURIComponent(sessionId)}`);
       if (!res.ok) throw new Error(await res.text());
 
+      // 👉 здесь ничего не хардкодим: ссылка строится от текущего домена (test.smartvision.life)
       const mergedUrl = `${location.origin}/${sessionId}_merged.wav`;
       logLink("💾 Готово:", mergedUrl, `${sessionId}_merged.wav`);
     } catch (e) {
