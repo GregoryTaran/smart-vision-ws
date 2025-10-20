@@ -12,17 +12,13 @@ const PORT = process.env.PORT || 5000;
 // 1) Раздаём статику из /public
 app.use(express.static(path.join(__dirname, "public")));
 
-// 2) Корень редиректим на /context.html (чтобы не было "Cannot GET /")
-app.get("/", (_req, res) => {
-  res.redirect("/context.html");
-});
+// 2) Корень -> /context.html (чтобы не было "Cannot GET /")
+app.get("/", (_req, res) => res.redirect("/context.html"));
 
-// 3) Health-проверка (удобно смотреть сразу в браузере)
-app.get("/health", (_req, res) => {
-  res.status(200).send("OK");
-});
+// 3) Health-check
+app.get("/health", (_req, res) => res.status(200).send("OK"));
 
-// 4) HTTP → WS апгрейд с путём /ws
+// 4) HTTP → WS upgrade на пути /ws
 const server = app.listen(PORT, () => {
   console.log(`🚀 Context test server on port ${PORT}`);
 });
@@ -30,8 +26,8 @@ const server = app.listen(PORT, () => {
 const wss = new WebSocketServer({ noServer: true });
 
 server.on("upgrade", (req, socket, head) => {
-  // принимаем апгрейд только на /ws
-  if (new URL(req.url, `http://${req.headers.host}`).pathname !== "/ws") {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  if (url.pathname !== "/ws") {
     socket.destroy();
     return;
   }
@@ -40,7 +36,7 @@ server.on("upgrade", (req, socket, head) => {
   });
 });
 
-// 5) Эхо-сервер: отвечает сколько байт получил
+// 5) Простой эхо-сервер: отвечает, сколько байт получил
 wss.on("connection", (ws) => {
   console.log("🟢 WS client connected");
   ws.on("message", (data) => {
