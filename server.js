@@ -3,11 +3,19 @@ import { WebSocketServer } from "ws";
 import { spawn } from "child_process";
 import OpenAI from "openai";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Инициализация OpenAI
+// 📂 теперь сервер видит папку public (context.html, context.js и т.д.)
+app.use(express.static(path.join(__dirname, "public")));
+
+// 🧠 Whisper API
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -44,7 +52,7 @@ wss.on("connection", (ws) => {
   ws.on("close", () => console.log("🔴 WS closed"));
 });
 
-// 🧠 Функция конвертации WebM → WAV
+// 🧩 Конвертация WebM → WAV
 async function convertWebmToWav(webmBuffer) {
   return new Promise((resolve, reject) => {
     const ffmpeg = spawn("ffmpeg", [
@@ -67,9 +75,9 @@ async function convertWebmToWav(webmBuffer) {
   });
 }
 
-// 🚪 Обработка HTTP -> WebSocket апгрейда
+// 🚪 HTTP → WebSocket
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Smart Vision WS + Whisper running on ${PORT}`);
+  console.log(`🚀 Smart Vision WS + Whisper + Static running on ${PORT}`);
 });
 
 server.on("upgrade", (req, socket, head) => {
