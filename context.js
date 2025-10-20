@@ -4,6 +4,7 @@ let buffer = [];
 let total = 0;
 let lastSend = 0;
 let sampleRate = 44100;
+let sessionId = null; // 🔐 добавлено
 const logEl = document.getElementById("log");
 
 // 🔗 Лог с кликабельными ссылками
@@ -23,7 +24,17 @@ document.getElementById("start").onclick = async () => {
   ws = new WebSocket(WS_URL);
   ws.binaryType = "arraybuffer";
 
-  ws.onmessage = (e) => log("📩 " + e.data);
+  // 🔹 обработка sessionId и обычных сообщений
+  ws.onmessage = (e) => {
+    const msg = String(e.data);
+    if (msg.startsWith("SESSION:")) {
+      sessionId = msg.split(":")[1];
+      log(`📩 SESSION:${sessionId}`);
+    } else {
+      log("📩 " + msg);
+    }
+  };
+
   ws.onclose = () => log("❌ Disconnected");
 
   audioCtx = new AudioContext();
@@ -110,4 +121,24 @@ document.getElementById("stop").onclick = () => {
   log("⏹️ Stopped");
   document.getElementById("start").disabled = false;
   document.getElementById("stop").disabled = true;
+
+  // 🧩 После остановки — объединяем файлы по сессии
+  setTimeout(async () => {
+    try {
+      if (!sessionId) {
+        log("❔ Session ID неизвестен — невозможно объединить");
+        return;
+      }
+
+      log("🧩 Отправляем запрос на объединение...");
+
+      const res = await fetch(`/merge?session=${encodeURIComponent(sessionId)}`);
+      if (!res.ok) throw new Error(await res.text());
+
+      const mergedUrl = `${location.origin}/${sessionId}_merged.wav`;
+      log(`💾 Готово: <a href="${mergedUrl}" target="_blank" download>${sessionId}_merged.wav</a>`);
+    } catch (e) {
+      log("❌ Ошибка объединения: " + e.message);
+    }
+  }, 1000);
 };
