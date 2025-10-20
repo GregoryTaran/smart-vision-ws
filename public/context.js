@@ -1,4 +1,4 @@
-const WS_URL = location.origin.replace(/^http/, "ws"); // автоматически
+const WS_URL = `${location.origin.replace(/^http/, "ws")}/ws`;
 let ws, audioCtx, worklet, stream;
 let buffer = [];
 let total = 0;
@@ -27,11 +27,15 @@ document.getElementById("start").onclick = async () => {
     worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
     source.connect(worklet);
 
-    const CHUNK_SIZE = audioCtx.sampleRate * 1; // 1 секунда
+    const CHUNK_SIZE = audioCtx.sampleRate * 1; // 1 сек
+    buffer = [];
+    total = 0;
+
     worklet.port.onmessage = (e) => {
       const chunk = e.data;
       buffer.push(chunk);
       total += chunk.length;
+
       if (total >= CHUNK_SIZE) {
         const full = new Float32Array(total);
         let offset = 0;
@@ -39,10 +43,12 @@ document.getElementById("start").onclick = async () => {
           full.set(part, offset);
           offset += part.length;
         }
+
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(full.buffer);
           log(`🎧 Sent ${full.byteLength} bytes`);
         }
+
         buffer = [];
         total = 0;
       }
