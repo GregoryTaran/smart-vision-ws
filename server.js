@@ -1,118 +1,79 @@
 import express from "express";
-import http from "http";
 import { WebSocketServer } from "ws";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import path from "path";
+import { spawn } from "child_process";
 import OpenAI from "openai";
-import ffmpeg from "fluent-ffmpeg";
+import fs from "fs";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const PORT = process.env.PORT || 5000;
 
+// Инициализация OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.get("/", (req, res) => {
-  res.send("🎧 Smart Vision WS + Whisper v1.2 (whisper-safe+)");
-});
+// 🚀 WebSocket сервер
+const wss = new WebSocketServer({ noServer: true });
 
 wss.on("connection", (ws) => {
-  console.log("✅ Client connected");
-
-  let audioChunks = [];
-  let lastProcessed = Date.now();
+  console.log("🟢 Client connected via WS");
 
   ws.on("message", async (data) => {
+    if (typeof data === "string") return;
+
     try {
-      if (data instanceof Buffer) {
-        audioChunks.push(data);
+      console.log("🎧 Received chunk:", data.length, "bytes");
+      ws.send("🌀 Processing speech...");
 
-        // каждые 5 секунд отправляем буфер в Whisper
-        if (Date.now() - lastProcessed > 5000) {
-          const merged = Buffer.concat(audioChunks);
+      // 1️⃣ Конвертируем WebM → WAV
+      const wavBuffer = await convertWebmToWav(data);
 
-          if (merged.length < 8000) {
-            console.log("⚠️ Too small chunk, skipping...");
-            audioChunks = [];
-            lastProcessed = Date.now();
-            return;
-          }
+      // 2️⃣ Распознаем через Whisper
+      const result = await openai.audio.transcriptions.create({
+        file: new File([wavBuffer], "chunk.wav", { type: "audio/wav" }),
+        model: "whisper-1",
+      });
 
-          const tempWebm = path.join(__dirname, "temp.webm");
-          const tempWav = path.join(__dirname, "temp.wav");
-          fs.writeFileSync(tempWebm, merged);
-
-          ws.send("🌀 Processing speech...");
-          console.log(`🎧 Processing ${merged.length} bytes`);
-
-          // ждём 200 мс, чтобы файл дописался полностью
-          await new Promise((r) => setTimeout(r, 200));
-
-          // проверяем целостность
-          const stats = fs.statSync(tempWebm);
-          if (!stats.size || stats.size < 10000) {
-            console.log("⚠️ Skipping incomplete WebM chunk");
-            [tempWebm].forEach((f) => fs.existsSync(f) && fs.unlinkSync(f));
-            audioChunks = [];
-            lastProcessed = Date.now();
-            return;
-          }
-
-          try {
-            // 🔁 конвертация webm → wav
-            await new Promise((resolve, reject) => {
-              ffmpeg(tempWebm)
-                .noVideo()
-                .audioCodec("pcm_s16le")
-                .audioChannels(1)
-                .audioFrequency(16000)
-                .on("end", resolve)
-                .on("error", reject)
-                .save(tempWav);
-            });
-
-            // 🎙️ Распознавание через Whisper
-            const transcript = await openai.audio.transcriptions.create({
-              file: fs.createReadStream(tempWav),
-              model: "whisper-1",
-              response_format: "text",
-            });
-
-            ws.send("📝 " + transcript);
-            console.log("🗣️ Whisper:", transcript);
-          } catch (whisperErr) {
-            console.error("❌ Whisper error:", whisperErr.message);
-            ws.send("❌ Whisper error: " + whisperErr.message);
-          }
-
-          // 🧹 Очистка временных файлов
-          [tempWebm, tempWav].forEach(
-            (f) => fs.existsSync(f) && fs.unlinkSync(f)
-          );
-
-          audioChunks = [];
-          lastProcessed = Date.now();
-        }
-      } else {
-        ws.send("Echo: " + data.toString());
-      }
+      ws.send("📝 " + result.text.trim());
     } catch (err) {
-      console.error("❌ General error:", err);
-      ws.send("❌ Error processing audio");
+      console.error("❌ Whisper error:", err.message);
+      ws.send("❌ Whisper error: " + err.message);
     }
   });
 
-  ws.on("close", () => {
-    console.log("❌ Client disconnected");
-    audioChunks = [];
-  });
+  ws.on("close", () => console.log("🔴 WS closed"));
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () =>
-  console.log(`🚀 Smart Vision WS + Whisper v1.2 running on port ${PORT}`)
-);
+// 🧠 Функция конвертации WebM → WAV
+async function convertWebmToWav(webmBuffer) {
+  return new Promise((resolve, reject) => {
+    const ffmpeg = spawn("ffmpeg", [
+      "-loglevel", "error",
+      "-i", "pipe:0",
+      "-ar", "16000",
+      "-ac", "1",
+      "-f", "wav",
+      "pipe:1",
+    ]);
+
+    const output = [];
+    ffmpeg.stdout.on("data", (chunk) => output.push(chunk));
+    ffmpeg.on("close", (code) => {
+      if (code === 0) resolve(Buffer.concat(output));
+      else reject(new Error(`ffmpeg exited with code ${code}`));
+    });
+    ffmpeg.on("error", reject);
+    ffmpeg.stdin.end(webmBuffer);
+  });
+}
+
+// 🚪 Обработка HTTP -> WebSocket апгрейда
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Smart Vision WS + Whisper running on ${PORT}`);
+});
+
+server.on("upgrade", (req, socket, head) => {
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    wss.emit("connection", ws, req);
+  });
+});
