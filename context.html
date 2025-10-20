@@ -2,22 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎧 Context v1 — Audio → Whisper</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
       background: #f4f4f4;
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 0;
+      padding: 16px;
+      border-radius: 0;
       display: flex;
       flex-direction: column;
-      min-height: 100vh; /* тянем страницу на всю высоту */
+      min-height: 100vh;
+      box-sizing: border-box;
     }
-    h2 { text-align: center; margin-bottom: 20px; }
-    .controls { text-align:center; }
+
+    /* На больших экранах — центрируем */
+    @media (min-width: 800px) {
+      body {
+        max-width: 700px;
+        margin: 40px auto;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 20px;
+      }
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
     button {
       padding: 10px 20px;
       font-size: 16px;
@@ -26,18 +47,21 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
     #start { background: #4caf50; color: white; }
     #stop { background: #f44336; color: white; }
+
     #log {
-      margin-top: 20px;
+      margin-top: 10px;
       white-space: pre-wrap;
       background: #fff;
       padding: 10px;
       border-radius: 8px;
-      flex: 1;               /* 🧩 растягиваем блок лога на всё оставшееся место */
+      flex: 1;
       overflow-y: auto;
       border: 1px solid #ccc;
-      min-height: 300px;     /* чтобы не был слишком маленьким на низких экранах */
+      min-height: 300px;
+      font-size: 14px;
     }
   </style>
 </head>
