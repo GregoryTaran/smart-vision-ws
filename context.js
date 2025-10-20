@@ -3,8 +3,9 @@ let ws, audioCtx, worklet, stream;
 let buffer = [];
 let total = 0;
 let lastSend = 0;
-const logEl = document.getElementById("log");
+let sampleRate = 44100;
 
+const logEl = document.getElementById("log");
 function log(msg) {
   logEl.textContent += msg + "\n";
   logEl.scrollTop = logEl.scrollHeight;
@@ -19,14 +20,13 @@ document.getElementById("start").onclick = async () => {
   ws.onclose = () => log("❌ Disconnected");
 
   audioCtx = new AudioContext();
-  const sr = audioCtx.sampleRate;
-  document.getElementById("rate").textContent = `SampleRate: ${sr} Hz`;
-  log(`🎛 SampleRate: ${sr} Hz`);
+  sampleRate = audioCtx.sampleRate;
+  log(`🎛 Detected SampleRate: ${sampleRate} Hz`);
   await audioCtx.audioWorklet.addModule("recorder-worklet.js");
 
   ws.onopen = () => {
     log("✅ Connected to WebSocket server");
-    ws.send(JSON.stringify({ type: "meta", sampleRate: sr }));
+    ws.send(JSON.stringify({ type: "meta", sampleRate }));
   };
 
   stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -34,7 +34,7 @@ document.getElementById("start").onclick = async () => {
   worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
   source.connect(worklet);
 
-  const INTERVAL = 2000;
+  const INTERVAL = 2000; // 2 секунды
   lastSend = performance.now();
 
   worklet.port.onmessage = (e) => {
@@ -58,7 +58,7 @@ function sendBlock(pad = false) {
   if (!buffer.length) return;
   let full = concat(buffer);
   if (pad) {
-    const target = Math.round(audioCtx.sampleRate * 2);
+    const target = Math.round(sampleRate * 2);
     if (full.length < target) {
       const padded = new Float32Array(target);
       padded.set(full);
@@ -66,10 +66,12 @@ function sendBlock(pad = false) {
       log(`🫧 Padded last block (${target - full.length} zeros)`);
     }
   }
+
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(full.buffer);
-    log(`🎧 Sent ${full.byteLength} bytes`);
+    log(`🎧 Sent ${full.byteLength} bytes @ ${sampleRate} Hz`);
   }
+
   buffer = [];
   total = 0;
 }
