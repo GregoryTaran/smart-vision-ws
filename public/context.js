@@ -27,7 +27,7 @@ document.getElementById("start").onclick = async () => {
     worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
     source.connect(worklet);
 
-    const CHUNK_SIZE = audioCtx.sampleRate * 1; // 1 сек
+    const CHUNK_SIZE = audioCtx.sampleRate * 1; // 1 секунда
     buffer = [];
     total = 0;
 
