@@ -1,12 +1,83 @@
+import fs from "fs";
 import express from "express";
 import { WebSocketServer } from "ws";
-import fs from "fs";
 
 const app = express();
-const PORT = process.env.PORT || 10000;
-const wss = new WebSocketServer({ noServer: true });
+const server = app.listen(3000, () => console.log("🚀 Server started"));
+const wss = new WebSocketServer({ server });
 
-// 🎧 Конвертация Float32Array → WAV (PCM16)
+app.use(express.static(".")); // раздаём все файлы из текущей папки
+
+// 🎙️ Каждое подключение — новая сессия
+let sessionCounter = 1;
+
+wss.on("connection", (ws) => {
+  ws.sessionId = `sess-${sessionCounter++}`;
+  ws.chunkCounter = 0;
+  console.log(`🎧 New connection: ${ws.sessionId}`);
+
+  ws.on("message", (msg) => {
+    // получаем Float32 аудиоданные
+    if (msg instanceof Buffer) {
+      const f32 = new Float32Array(msg.buffer, msg.byteOffset, msg.byteLength / 4);
+      const wav = floatToWav(f32, ws.sampleRate || 44100);
+      const filename = `${ws.sessionId}_chunk_${ws.chunkCounter++}.wav`;
+      fs.writeFileSync(filename, wav);
+      ws.send(`💾 Saved ${filename}`);
+    } else {
+      // метаданные
+      try {
+        const data = JSON.parse(msg.toString());
+        if (data.type === "meta") ws.sampleRate = data.sampleRate;
+      } catch {}
+    }
+  });
+
+  ws.on("close", () => console.log(`❌ Closed: ${ws.sessionId}`));
+});
+
+// 📦 merge для конкретной сессии
+app.get("/merge", (req, res) => {
+  try {
+    const session = req.query.session;
+    if (!session) return res.status(400).send("No session provided");
+
+    const files = fs.readdirSync(".").filter(f => f.startsWith(session + "_chunk_"));
+    if (!files.length) return res.status(404).send("No files for this session");
+
+    const first = fs.readFileSync(files[0]);
+    const sampleRate = first.readUInt32LE(24);
+    const headerSize = 44;
+    const pcms = files.map(f => fs.readFileSync(f).subarray(headerSize));
+    const totalPCM = Buffer.concat(pcms);
+
+    const byteLen = totalPCM.length;
+    const header = Buffer.alloc(44);
+    header.write("RIFF", 0);
+    header.writeUInt32LE(36 + byteLen, 4);
+    header.write("WAVE", 8);
+    header.write("fmt ", 12);
+    header.writeUInt32LE(16, 16);
+    header.writeUInt16LE(1, 20);
+    header.writeUInt16LE(1, 22);
+    header.writeUInt32LE(sampleRate, 24);
+    header.writeUInt32LE(sampleRate * 2, 28);
+    header.writeUInt16LE(2, 32);
+    header.writeUInt16LE(16, 34);
+    header.write("data", 36);
+    header.writeUInt32LE(byteLen, 40);
+
+    const merged = Buffer.concat([header, totalPCM]);
+    const mergedFile = `${session}_merged.wav`;
+    fs.writeFileSync(mergedFile, merged);
+    res.download(mergedFile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Merge error");
+  }
+});
+
+// --- функция создания WAV ---
 function floatToWav(float32Array, sampleRate = 44100) {
   const buffer = Buffer.alloc(44 + float32Array.length * 2);
   const view = new DataView(buffer.buffer);
@@ -14,13 +85,13 @@ function floatToWav(float32Array, sampleRate = 44100) {
   view.setUint32(4, 36 + float32Array.length * 2, true);
   view.setUint32(8, 0x57415645, false); // "WAVE"
   view.setUint32(12, 0x666d7420, false); // "fmt "
-  view.setUint32(16, 16, true); // PCM header size
-  view.setUint16(20, 1, true); // PCM format
-  view.setUint16(22, 1, true); // mono
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
   view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true); // byte rate
-  view.setUint16(32, 2, true); // block align
-  view.setUint16(34, 16, true); // bits per sample
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
   view.setUint32(36, 0x64617461, false); // "data"
   view.setUint32(40, float32Array.length * 2, true);
 
@@ -32,78 +103,3 @@ function floatToWav(float32Array, sampleRate = 44100) {
   }
   return buffer;
 }
-
-// 🧩 Диагностика уровня сигнала
-function rmsDbFS(f32) {
-  let sum = 0, peak = 0;
-  for (let i = 0; i < f32.length; i++) {
-    const v = f32[i];
-    sum += v * v;
-    const a = Math.abs(v);
-    if (a > peak) peak = a;
-  }
-  const rms = Math.sqrt(sum / f32.length);
-  const dbfs = rms > 0 ? 20 * Math.log10(rms / 1.0) : -Infinity;
-  return { rms, peak, dbfs: +dbfs.toFixed(2) };
-}
-
-// 🎙️ WebSocket соединение
-wss.on("connection", (ws) => {
-  console.log("🟢 Client connected");
-  ws.sampleRate = 44100;
-  let counter = 0;
-
-  ws.on("message", (data) => {
-    if (typeof data === "string") {
-      try {
-        const json = JSON.parse(data);
-        if (json.type === "meta" && json.sampleRate) {
-          ws.sampleRate = json.sampleRate;
-          console.log(`🎛 sampleRate from client: ${ws.sampleRate} Hz`);
-          ws.send(`🎛 SampleRate confirmed: ${ws.sampleRate} Hz`);
-          return;
-        }
-      } catch {}
-    }
-
-    // ✅ Правильная интерпретация Float32Array
-    const buf = Buffer.from(data);
-    const f32 = new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);
-
-    // 🔍 Проверим уровень сигнала
-    const stats = rmsDbFS(f32);
-    if (!isFinite(stats.dbfs) || stats.rms === 0)
-      console.warn("⚠️ Похоже тишина:", stats);
-    else if (stats.dbfs > -3)
-      console.warn("⚠️ Слишком громко/клип:", stats);
-    else
-      console.log(`🎚 Уровень: ${stats.dbfs} dBFS`);
-
-    // 💾 Сохраняем WAV
-    const wav = floatToWav(f32, ws.sampleRate);
-    const file = `chunk_${counter++}.wav`;
-    fs.writeFileSync(file, wav);
-
-    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
-    const fileUrl = `${baseUrl.replace(/\/$/, "")}/${file}`;
-
-    console.log(`💾 Saved ${file} (${wav.length} bytes @ ${ws.sampleRate}Hz)`);
-    ws.send(`💾 Saved ${file} — ${fileUrl}`);
-  });
-
-  ws.on("close", () => console.log("🔴 WS closed"));
-});
-
-// 🚀 Express раздаёт файлы из текущей директории
-app.use(express.static("."));
-
-// 🧩 HTTP → WebSocket upgrade
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Context WS server running on port ${PORT}`);
-});
-
-server.on("upgrade", (req, socket, head) => {
-  wss.handleUpgrade(req, socket, head, (ws) => {
-    wss.emit("connection", ws, req);
-  });
-});
