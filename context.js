@@ -4,10 +4,10 @@ let buffer = [];
 let total = 0;
 let lastSend = 0;
 let sampleRate = 44100;
-let sessionId = null; // 🔐 добавлено
+let sessionId = null;
 const logEl = document.getElementById("log");
 
-// 🔗 Лог с кликабельными ссылками
+// 🔗 Лог с кликабельными ссылками (обычные сообщения)
 function log(msg) {
   const linked = msg.replace(
     /(https?:\/\/[^\s]+)/g,
@@ -20,11 +20,25 @@ function log(msg) {
   console.log(msg);
 }
 
+// 🔗 Отдельная функция для правильной ссылки (без html в href)
+function logLink(prefix, url, text) {
+  const line = document.createElement("div");
+  line.append(document.createTextNode(prefix + " "));
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.download = text;
+  a.textContent = text;
+  line.appendChild(a);
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+  console.log(`${prefix} ${url}`);
+}
+
 document.getElementById("start").onclick = async () => {
   ws = new WebSocket(WS_URL);
   ws.binaryType = "arraybuffer";
 
-  // 🔹 обработка sessionId и обычных сообщений
   ws.onmessage = (e) => {
     const msg = String(e.data);
     if (msg.startsWith("SESSION:")) {
@@ -136,7 +150,7 @@ document.getElementById("stop").onclick = () => {
       if (!res.ok) throw new Error(await res.text());
 
       const mergedUrl = `${location.origin}/${sessionId}_merged.wav`;
-      log(`💾 Готово: <a href="${mergedUrl}" target="_blank" download>${sessionId}_merged.wav</a>`);
+      logLink("💾 Готово:", mergedUrl, `${sessionId}_merged.wav`);
     } catch (e) {
       log("❌ Ошибка объединения: " + e.message);
     }
