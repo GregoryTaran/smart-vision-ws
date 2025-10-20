@@ -150,7 +150,8 @@ document.getElementById('stop').onclick = () => {
       if (!res.ok) throw new Error(await res.text());
 
       const mergedUrl = 'https://test.smartvision.life/' + sessionId + '_merged.wav';
-      logLink('💾 Готово:', mergedUrl, sessionId + '_merged.wav');
+      logLink('💾 Готово:', mergedUrl, mergedUrl); // текст = полный URL
+
     } catch (e) {
       log('❌ Ошибка объединения: ' + e.message);
     }
