@@ -1,5 +1,5 @@
 {
-  "name": "smart-vision-ws",
+  "name": "context-server",
   "version": "1.0.0",
   "type": "module",
   "main": "server.js",
@@ -8,10 +8,6 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "ws": "^8.18.3",
-    "openai": "^4.68.4",
-    "fluent-ffmpeg": "^2.1.2"
+    "ws": "^8.18.3"
   }
 }
-
-

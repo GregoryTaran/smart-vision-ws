@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎧 Context Test</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f4f4f4; max-width: 700px; margin: 40px auto;
+      padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    button { padding: 10px 20px; font-size: 16px; margin-right: 10px; border: none; border-radius: 8px; cursor: pointer; }
+    #start { background: #4caf50; color: white; }
+    #stop { background: #f44336; color: white; }
+    #log { margin-top: 20px; white-space: pre-wrap; background: #fff; padding: 10px; border-radius: 8px; height: 300px;
+      overflow-y: auto; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h2>🎧 Context v1 — Audio → Server</h2>
+  <div style="text-align:center;">
+    <button id="start">Start</button>
+    <button id="stop" disabled>Stop</button>
+  </div>
+  <div id="log"></div>
+
+  <script type="module" src="context.js"></script>
+</body>
+</html>
