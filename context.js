@@ -27,7 +27,6 @@ function logLink(prefix, url, text) {
   const a = document.createElement("a");
   a.href = url;
   a.target = "_blank";
-  // a.download = text;
   a.textContent = text;
   line.appendChild(a);
   logEl.appendChild(line);
@@ -136,7 +135,7 @@ document.getElementById('stop').onclick = () => {
   document.getElementById('start').disabled = false;
   document.getElementById('stop').disabled = true;
 
-  // 🧩 После остановки — объединяем файлы по сессии
+  // 🧩 После остановки — объединяем файлы по сессии, затем шлём в Whisper
   setTimeout(async () => {
     try {
       if (!sessionId) {
@@ -152,8 +151,14 @@ document.getElementById('stop').onclick = () => {
       const mergedUrl = 'https://test.smartvision.life/' + sessionId + '_merged.wav';
       logLink('💾 Готово:', mergedUrl, mergedUrl); // текст = полный URL
 
+      // 🔁 Whisper
+      log('🧠 Отправляем в Whisper...');
+      const w = await fetch('/whisper?session=' + encodeURIComponent(sessionId));
+      const data = await w.json();
+      if (!w.ok) throw new Error(data?.error || 'Whisper error');
+      log('🧠 Whisper → ' + (data.text || ''));
     } catch (e) {
-      log('❌ Ошибка объединения: ' + e.message);
+      log('❌ Ошибка: ' + e.message);
     }
   }, 1000);
 };
