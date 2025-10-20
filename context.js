@@ -6,8 +6,15 @@ let lastSend = 0;
 let sampleRate = 44100;
 const logEl = document.getElementById("log");
 
+// 🔗 Лог с кликабельными ссылками
 function log(msg) {
-  logEl.textContent += msg + "\n";
+  const linked = msg.replace(
+    /(https?:\/\/[^\s]+)/g,
+    (url) => `<a href="${url}" target="_blank">${url}</a>`
+  );
+  const line = document.createElement("div");
+  line.innerHTML = linked;
+  logEl.appendChild(line);
   logEl.scrollTop = logEl.scrollHeight;
   console.log(msg);
 }
@@ -29,7 +36,15 @@ document.getElementById("start").onclick = async () => {
     ws.send(JSON.stringify({ type: "meta", sampleRate }));
   };
 
-  stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  // 🎙️ Получаем микрофон без автофильтров
+  stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      noiseSuppression: false,
+      echoCancellation: false,
+      autoGainControl: false
+    }
+  });
+
   const source = audioCtx.createMediaStreamSource(stream);
   worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
   source.connect(worklet);
