@@ -60,7 +60,6 @@ document.getElementById("start").onclick = async () => {
     ws.send(JSON.stringify({ type: 'meta', sampleRate }));
   };
 
-  // 🎙️ Получаем микрофон без автофильтров
   stream = await navigator.mediaDevices.getUserMedia({
     audio: {
       noiseSuppression: false,
@@ -73,7 +72,7 @@ document.getElementById("start").onclick = async () => {
   worklet = new AudioWorkletNode(audioCtx, 'recorder-processor');
   source.connect(worklet);
 
-  const INTERVAL = 2000; // 2 секунды
+  const INTERVAL = 2000;
   lastSend = performance.now();
 
   worklet.port.onmessage = (e) => {
@@ -135,7 +134,6 @@ document.getElementById('stop').onclick = () => {
   document.getElementById('start').disabled = false;
   document.getElementById('stop').disabled = true;
 
-  // 🧩 После остановки — объединяем файлы по сессии, затем шлём в Whisper
   setTimeout(async () => {
     try {
       if (!sessionId) {
@@ -144,19 +142,28 @@ document.getElementById('stop').onclick = () => {
       }
 
       log('🧩 Отправляем запрос на объединение...');
-
       const res = await fetch('/merge?session=' + encodeURIComponent(sessionId));
       if (!res.ok) throw new Error(await res.text());
 
       const mergedUrl = 'https://test.smartvision.life/' + sessionId + '_merged.wav';
-      logLink('💾 Готово:', mergedUrl, mergedUrl); // текст = полный URL
+      logLink('💾 Готово:', mergedUrl, mergedUrl);
 
-      // 🔁 Whisper
+      // 🧠 Whisper
       log('🧠 Отправляем в Whisper...');
       const w = await fetch('/whisper?session=' + encodeURIComponent(sessionId));
       const data = await w.json();
       if (!w.ok) throw new Error(data?.error || 'Whisper error');
       log('🧠 Whisper → ' + (data.text || ''));
+
+      // 🔊 TTS — озвучка текста
+      if (data.text) {
+        log('🔊 Отправляем текст в TTS...');
+        const ttsRes = await fetch(`/tts?session=${encodeURIComponent(sessionId)}&text=${encodeURIComponent(data.text)}`);
+        const ttsData = await ttsRes.json();
+        if (!ttsRes.ok) throw new Error(ttsData?.error || 'TTS error');
+        logLink('🔊 Озвучка:', ttsData.url, ttsData.url);
+      }
+
     } catch (e) {
       log('❌ Ошибка: ' + e.message);
     }
