@@ -4,8 +4,8 @@ let buffer = [];
 let total = 0;
 let lastSend = 0;
 let sampleRate = 44100;
-
 const logEl = document.getElementById("log");
+
 function log(msg) {
   logEl.textContent += msg + "\n";
   logEl.scrollTop = logEl.scrollHeight;
