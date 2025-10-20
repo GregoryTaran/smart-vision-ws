@@ -106,6 +106,49 @@ app.get("/merge", (req, res) => {
   }
 });
 
+// 🧠 Whisper — отправляем объединённый WAV в OpenAI и получаем текст
+// Используем встроенные в Node 18+: fetch, FormData, Blob
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+app.get("/whisper", async (req, res) => {
+  try {
+    if (!OPENAI_API_KEY) return res.status(500).send("Missing OPENAI_API_KEY");
+
+    const session = (req.query.session || "").toString().trim();
+    if (!session) return res.status(400).send("No session id");
+
+    const file = `${session}_merged.wav`;
+    if (!fs.existsSync(file)) return res.status(404).send("File not found");
+
+    // Читаем файл и создаём Blob для FormData
+    const buf = fs.readFileSync(file);
+    const blob = new Blob([buf], { type: "audio/wav" });
+
+    const form = new FormData();
+    form.append("file", blob, file);      // третьим параметром задаём имя файла
+    form.append("model", "whisper-1");    // модель Whisper
+
+    const r = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}` },
+      body: form,
+    });
+
+    const data = await r.json();
+    if (!r.ok) {
+      const msg = data?.error?.message || "Whisper error";
+      console.error("❌ Whisper API error:", data);
+      return res.status(r.status).json({ error: msg });
+    }
+
+    console.log(`🧠 Whisper → ${data.text || ""}`);
+    res.json({ text: data.text || "" });
+  } catch (e) {
+    console.error("❌ Whisper error:", e);
+    res.status(500).json({ error: String(e.message || e) });
+  }
+});
+
 // --- функция создания WAV ---
 function floatToWav(float32Array, sampleRate = 44100) {
   const buffer = Buffer.alloc(44 + float32Array.length * 2);
