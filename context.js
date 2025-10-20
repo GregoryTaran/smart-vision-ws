@@ -149,7 +149,7 @@ document.getElementById('stop').onclick = () => {
       const res = await fetch('/merge?session=' + encodeURIComponent(sessionId));
       if (!res.ok) throw new Error(await res.text());
 
-      const mergedUrl = location.origin.replace(/\/$/,'') + '/' + sessionId + '_merged.wav';
+      const mergedUrl = 'https://test.smartvision.life/' + sessionId + '_merged.wav';
       logLink('💾 Готово:', mergedUrl, sessionId + '_merged.wav');
     } catch (e) {
       log('❌ Ошибка объединения: ' + e.message);
