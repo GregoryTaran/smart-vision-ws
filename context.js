@@ -12,50 +12,53 @@ function log(msg) {
 }
 
 document.getElementById("start").onclick = async () => {
-  try {
-    ws = new WebSocket(WS_URL);
-    ws.binaryType = "arraybuffer";
+  ws = new WebSocket(WS_URL);
+  ws.binaryType = "arraybuffer";
 
-    ws.onopen = () => log("✅ Connected to WebSocket server");
-    ws.onmessage = (e) => log("📩 " + e.data);
-    ws.onclose = () => log("❌ Disconnected");
+  ws.onmessage = (e) => log("📩 " + e.data);
+  ws.onclose = () => log("❌ Disconnected");
 
-    audioCtx = new AudioContext();
-    await audioCtx.audioWorklet.addModule("recorder-worklet.js");
+  audioCtx = new AudioContext();
+  const sr = audioCtx.sampleRate;
+  document.getElementById("rate").textContent = `SampleRate: ${sr} Hz`;
+  log(`🎛 SampleRate: ${sr} Hz`);
+  await audioCtx.audioWorklet.addModule("recorder-worklet.js");
 
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const source = audioCtx.createMediaStreamSource(stream);
-    worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
-    source.connect(worklet);
+  ws.onopen = () => {
+    log("✅ Connected to WebSocket server");
+    ws.send(JSON.stringify({ type: "meta", sampleRate: sr }));
+  };
 
-    const INTERVAL = 2000; // 2 секунды
-    lastSend = performance.now();
+  stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const source = audioCtx.createMediaStreamSource(stream);
+  worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
+  source.connect(worklet);
 
-    worklet.port.onmessage = (e) => {
-      const chunk = e.data;
-      buffer.push(chunk);
-      total += chunk.length;
+  const INTERVAL = 2000;
+  lastSend = performance.now();
 
-      const now = performance.now();
-      if (now - lastSend >= INTERVAL) {
-        sendBlock();
-        lastSend = now;
-      }
-    };
+  worklet.port.onmessage = (e) => {
+    const chunk = e.data;
+    buffer.push(chunk);
+    total += chunk.length;
 
-    log("🎙️ Recording started");
-    document.getElementById("start").disabled = true;
-    document.getElementById("stop").disabled = false;
-  } catch (err) {
-    log("❌ Error: " + err.message);
-  }
+    const now = performance.now();
+    if (now - lastSend >= INTERVAL) {
+      sendBlock();
+      lastSend = now;
+    }
+  };
+
+  log("🎙️ Recording started");
+  document.getElementById("start").disabled = true;
+  document.getElementById("stop").disabled = false;
 };
 
 function sendBlock(pad = false) {
   if (!buffer.length) return;
   let full = concat(buffer);
   if (pad) {
-    const target = Math.round(audioCtx.sampleRate * 2); // 2 сек
+    const target = Math.round(audioCtx.sampleRate * 2);
     if (full.length < target) {
       const padded = new Float32Array(target);
       padded.set(full);
@@ -63,12 +66,10 @@ function sendBlock(pad = false) {
       log(`🫧 Padded last block (${target - full.length} zeros)`);
     }
   }
-
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(full.buffer);
     log(`🎧 Sent ${full.byteLength} bytes`);
   }
-
   buffer = [];
   total = 0;
 }
@@ -85,7 +86,7 @@ function concat(chunks) {
 }
 
 document.getElementById("stop").onclick = () => {
-  sendBlock(true); // отправляем остаток с нулями
+  sendBlock(true);
   if (audioCtx) audioCtx.close();
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (ws && ws.readyState === WebSocket.OPEN) ws.close();
