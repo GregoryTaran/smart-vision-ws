@@ -27,7 +27,7 @@ function logLink(prefix, url, text) {
   const a = document.createElement("a");
   a.href = url;
   a.target = "_blank";
-  a.download = text;
+  // a.download = text;
   a.textContent = text;
   line.appendChild(a);
   logEl.appendChild(line);
