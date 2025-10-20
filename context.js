@@ -11,7 +11,7 @@ const logEl = document.getElementById("log");
 function log(msg) {
   const linked = msg.replace(
     /(https?:\/\/[^\s]+)/g,
-    (url) => `<a href="\${url}" target="_blank">\${url}</a>`
+    (url) => '<a href="' + url + '" target="_blank">' + url + '</a>'
   );
   const line = document.createElement("div");
   line.innerHTML = linked;
@@ -32,7 +32,7 @@ function logLink(prefix, url, text) {
   line.appendChild(a);
   logEl.appendChild(line);
   logEl.scrollTop = logEl.scrollHeight;
-  console.log(`${prefix} ${url}`);
+  console.log(prefix + " " + url);
 }
 
 document.getElementById("start").onclick = async () => {
@@ -43,22 +43,22 @@ document.getElementById("start").onclick = async () => {
     const msg = String(e.data);
     if (msg.startsWith("SESSION:")) {
       sessionId = msg.split(":")[1];
-      log(`📩 SESSION:${sessionId}`);
+      log('📩 SESSION:' + sessionId);
     } else {
-      log("📩 " + msg);
+      log('📩 ' + msg);
     }
   };
 
-  ws.onclose = () => log("❌ Disconnected");
+  ws.onclose = () => log('❌ Disconnected');
 
   audioCtx = new AudioContext();
   sampleRate = audioCtx.sampleRate;
-  log(`🎛 Detected SampleRate: ${sampleRate} Hz`);
-  await audioCtx.audioWorklet.addModule("recorder-worklet.js");
+  log('🎛 Detected SampleRate: ' + sampleRate + ' Hz');
+  await audioCtx.audioWorklet.addModule('recorder-worklet.js');
 
   ws.onopen = () => {
-    log("✅ Connected to WebSocket server");
-    ws.send(JSON.stringify({ type: "meta", sampleRate }));
+    log('✅ Connected to WebSocket server');
+    ws.send(JSON.stringify({ type: 'meta', sampleRate }));
   };
 
   // 🎙️ Получаем микрофон без автофильтров
@@ -71,7 +71,7 @@ document.getElementById("start").onclick = async () => {
   });
 
   const source = audioCtx.createMediaStreamSource(stream);
-  worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
+  worklet = new AudioWorkletNode(audioCtx, 'recorder-processor');
   source.connect(worklet);
 
   const INTERVAL = 2000; // 2 секунды
@@ -89,9 +89,9 @@ document.getElementById("start").onclick = async () => {
     }
   };
 
-  log("🎙️ Recording started");
-  document.getElementById("start").disabled = true;
-  document.getElementById("stop").disabled = false;
+  log('🎙️ Recording started');
+  document.getElementById('start').disabled = true;
+  document.getElementById('stop').disabled = false;
 };
 
 function sendBlock(pad = false) {
@@ -103,13 +103,13 @@ function sendBlock(pad = false) {
       const padded = new Float32Array(target);
       padded.set(full);
       full = padded;
-      log(`🫧 Padded last block (${target - full.length} zeros)`);
+      log('🫧 Padded last block (' + (target - full.length) + ' zeros)');
     }
   }
 
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(full.buffer);
-    log(`🎧 Sent ${full.byteLength} bytes @ ${sampleRate} Hz`);
+    log('🎧 Sent ' + full.byteLength + ' bytes @ ' + sampleRate + ' Hz');
   }
 
   buffer = [];
@@ -127,33 +127,32 @@ function concat(chunks) {
   return res;
 }
 
-document.getElementById("stop").onclick = () => {
+document.getElementById('stop').onclick = () => {
   sendBlock(true);
   if (audioCtx) audioCtx.close();
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (ws && ws.readyState === WebSocket.OPEN) ws.close();
-  log("⏹️ Stopped");
-  document.getElementById("start").disabled = false;
-  document.getElementById("stop").disabled = true;
+  log('⏹️ Stopped');
+  document.getElementById('start').disabled = false;
+  document.getElementById('stop').disabled = true;
 
   // 🧩 После остановки — объединяем файлы по сессии
   setTimeout(async () => {
     try {
       if (!sessionId) {
-        log("❔ Session ID неизвестен — невозможно объединить");
+        log('❔ Session ID неизвестен — невозможно объединить');
         return;
       }
 
-      log("🧩 Отправляем запрос на объединение...");
+      log('🧩 Отправляем запрос на объединение...');
 
-      const res = await fetch(`/merge?session=\${encodeURIComponent(sessionId)}`);
+      const res = await fetch('/merge?session=' + encodeURIComponent(sessionId));
       if (!res.ok) throw new Error(await res.text());
 
-      // 👉 здесь ничего не хардкодим: ссылка строится от текущего домена (test.smartvision.life)
-      const mergedUrl = `${location.origin}/${sessionId}_merged.wav`;
-      logLink("💾 Готово:", mergedUrl, `${sessionId}_merged.wav`);
+      const mergedUrl = location.origin.replace(/\/$/,'') + '/' + sessionId + '_merged.wav';
+      logLink('💾 Готово:', mergedUrl, sessionId + '_merged.wav');
     } catch (e) {
-      log("❌ Ошибка объединения: " + e.message);
+      log('❌ Ошибка объединения: ' + e.message);
     }
   }, 1000);
 };
