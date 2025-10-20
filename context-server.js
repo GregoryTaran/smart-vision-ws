@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5050;
 
-// 📂 Статика (отдаём context.html и JS)
+// 📂 Отдаём файлы из public/
 app.use(express.static(path.join(__dirname, "public")));
 
 // 🚀 WebSocket сервер
@@ -28,7 +28,7 @@ wss.on("connection", (ws) => {
 
 // 🚪 HTTP → WS
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Context server running on http://localhost:${PORT}`);
+  console.log(`🚀 Context server running on port ${PORT}`);
 });
 
 server.on("upgrade", (req, socket, head) => {
