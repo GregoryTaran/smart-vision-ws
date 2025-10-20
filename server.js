@@ -9,6 +9,9 @@ const wss = new WebSocketServer({ server });
 
 app.use(express.static(".")); // раздаём файлы из текущей папки
 
+// ✅ Базовый публичный URL для ссылок в логах (заменили onrender на тестовый домен)
+const PUBLIC_BASE_URL = (process.env.BASE_PUBLIC_URL || "https://test.smartvision.life").replace(/\/$/, "");
+
 // 🎙️ Каждое подключение — новая сессия
 let sessionCounter = 1;
 
@@ -40,8 +43,8 @@ wss.on("connection", (ws) => {
     const filename = `${ws.sessionId}_chunk_${ws.chunkCounter++}.wav`;
     fs.writeFileSync(filename, wav);
 
-    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
-    const fileUrl = `${baseUrl.replace(/\/$/, "")}/${filename}`;
+    // 🔗 Всегда отдаём ссылку на test.smartvision.life (или BASE_PUBLIC_URL)
+    const fileUrl = `${PUBLIC_BASE_URL}/${filename}`;
     ws.send(`💾 Saved ${filename} — ${fileUrl}`);
   });
 
