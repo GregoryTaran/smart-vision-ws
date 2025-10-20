@@ -33,6 +33,20 @@ function floatToWav(float32Array, sampleRate = 44100) {
   return buffer;
 }
 
+// 🧩 Диагностика уровня сигнала
+function rmsDbFS(f32) {
+  let sum = 0, peak = 0;
+  for (let i = 0; i < f32.length; i++) {
+    const v = f32[i];
+    sum += v * v;
+    const a = Math.abs(v);
+    if (a > peak) peak = a;
+  }
+  const rms = Math.sqrt(sum / f32.length);
+  const dbfs = rms > 0 ? 20 * Math.log10(rms / 1.0) : -Infinity;
+  return { rms, peak, dbfs: +dbfs.toFixed(2) };
+}
+
 // 🎙️ WebSocket соединение
 wss.on("connection", (ws) => {
   console.log("🟢 Client connected");
@@ -52,13 +66,24 @@ wss.on("connection", (ws) => {
       } catch {}
     }
 
-    // 🧠 Конвертируем в WAV
-    const f32 = new Float32Array(data);
+    // ✅ Правильная интерпретация Float32Array
+    const buf = Buffer.from(data);
+    const f32 = new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);
+
+    // 🔍 Проверим уровень сигнала
+    const stats = rmsDbFS(f32);
+    if (!isFinite(stats.dbfs) || stats.rms === 0)
+      console.warn("⚠️ Похоже тишина:", stats);
+    else if (stats.dbfs > -3)
+      console.warn("⚠️ Слишком громко/клип:", stats);
+    else
+      console.log(`🎚 Уровень: ${stats.dbfs} dBFS`);
+
+    // 💾 Сохраняем WAV
     const wav = floatToWav(f32, ws.sampleRate);
     const file = `chunk_${counter++}.wav`;
     fs.writeFileSync(file, wav);
 
-    // 🌐 Формируем ссылку для скачивания
     const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
     const fileUrl = `${baseUrl.replace(/\/$/, "")}/${file}`;
 
