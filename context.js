@@ -2,6 +2,7 @@ const WS_URL = `${location.origin.replace(/^http/, "ws")}/ws`;
 let ws, audioCtx, worklet, stream;
 let buffer = [];
 let total = 0;
+let lastSend = 0;
 const logEl = document.getElementById("log");
 
 function log(msg) {
@@ -19,7 +20,7 @@ document.getElementById("start").onclick = async () => {
     ws.onmessage = (e) => log("📩 " + e.data);
     ws.onclose = () => log("❌ Disconnected");
 
-    audioCtx = new AudioContext({ sampleRate: 44100 });
+    audioCtx = new AudioContext();
     await audioCtx.audioWorklet.addModule("recorder-worklet.js");
 
     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -27,30 +28,18 @@ document.getElementById("start").onclick = async () => {
     worklet = new AudioWorkletNode(audioCtx, "recorder-processor");
     source.connect(worklet);
 
-    const CHUNK_SIZE = audioCtx.sampleRate * 1;
-    buffer = [];
-    total = 0;
+    const INTERVAL = 2000; // 2 секунды
+    lastSend = performance.now();
 
     worklet.port.onmessage = (e) => {
       const chunk = e.data;
       buffer.push(chunk);
       total += chunk.length;
 
-      if (total >= CHUNK_SIZE) {
-        const full = new Float32Array(total);
-        let offset = 0;
-        for (const part of buffer) {
-          full.set(part, offset);
-          offset += part.length;
-        }
-
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(full.buffer);
-          log(`🎧 Sent ${full.byteLength} bytes`);
-        }
-
-        buffer = [];
-        total = 0;
+      const now = performance.now();
+      if (now - lastSend >= INTERVAL) {
+        sendBlock();
+        lastSend = now;
       }
     };
 
@@ -62,7 +51,41 @@ document.getElementById("start").onclick = async () => {
   }
 };
 
+function sendBlock(pad = false) {
+  if (!buffer.length) return;
+  let full = concat(buffer);
+  if (pad) {
+    const target = Math.round(audioCtx.sampleRate * 2); // 2 сек
+    if (full.length < target) {
+      const padded = new Float32Array(target);
+      padded.set(full);
+      full = padded;
+      log(`🫧 Padded last block (${target - full.length} zeros)`);
+    }
+  }
+
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(full.buffer);
+    log(`🎧 Sent ${full.byteLength} bytes`);
+  }
+
+  buffer = [];
+  total = 0;
+}
+
+function concat(chunks) {
+  const totalLen = chunks.reduce((a, b) => a + b.length, 0);
+  const res = new Float32Array(totalLen);
+  let offset = 0;
+  for (const part of chunks) {
+    res.set(part, offset);
+    offset += part.length;
+  }
+  return res;
+}
+
 document.getElementById("stop").onclick = () => {
+  sendBlock(true); // отправляем остаток с нулями
   if (audioCtx) audioCtx.close();
   if (stream) stream.getTracks().forEach(t => t.stop());
   if (ws && ws.readyState === WebSocket.OPEN) ws.close();
