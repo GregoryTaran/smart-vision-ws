@@ -2,55 +2,78 @@ import fs from "fs";
 import express from "express";
 import { WebSocketServer } from "ws";
 
+const PORT = process.env.PORT || 3000;
 const app = express();
-const server = app.listen(3000, () => console.log("🚀 Server started"));
+const server = app.listen(PORT, () => console.log(`🚀 Server started on ${PORT}`));
 const wss = new WebSocketServer({ server });
 
-app.use(express.static(".")); // раздаём все файлы из текущей папки
+app.use(express.static(".")); // раздаём файлы из текущей папки
 
 // 🎙️ Каждое подключение — новая сессия
 let sessionCounter = 1;
 
 wss.on("connection", (ws) => {
+  ws.sampleRate = 44100;
   ws.sessionId = `sess-${sessionCounter++}`;
   ws.chunkCounter = 0;
+  ws.send(`SESSION:${ws.sessionId}`);
   console.log(`🎧 New connection: ${ws.sessionId}`);
 
-  ws.on("message", (msg) => {
-    // получаем Float32 аудиоданные
-    if (msg instanceof Buffer) {
-      const f32 = new Float32Array(msg.buffer, msg.byteOffset, msg.byteLength / 4);
-      const wav = floatToWav(f32, ws.sampleRate || 44100);
-      const filename = `${ws.sessionId}_chunk_${ws.chunkCounter++}.wav`;
-      fs.writeFileSync(filename, wav);
-      ws.send(`💾 Saved ${filename}`);
-    } else {
-      // метаданные
+  ws.on("message", (data) => {
+    // если это JSON с метаданными
+    if (typeof data === "string" || data instanceof String) {
       try {
-        const data = JSON.parse(msg.toString());
-        if (data.type === "meta") ws.sampleRate = data.sampleRate;
+        const json = JSON.parse(data);
+        if (json.type === "meta" && json.sampleRate) {
+          ws.sampleRate = json.sampleRate;
+          ws.send(`🎛 SampleRate confirmed: ${ws.sampleRate} Hz`);
+          return;
+        }
       } catch {}
     }
+
+    // 📦 если пришёл бинарный аудиоблок
+    const buf = Buffer.from(data);
+    const f32 = new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);
+    const wav = floatToWav(f32, ws.sampleRate);
+
+    const filename = `${ws.sessionId}_chunk_${ws.chunkCounter++}.wav`;
+    fs.writeFileSync(filename, wav);
+
+    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+    const fileUrl = `${baseUrl.replace(/\/$/, "")}/${filename}`;
+    ws.send(`💾 Saved ${filename} — ${fileUrl}`);
   });
 
-  ws.on("close", () => console.log(`❌ Closed: ${ws.sessionId}`));
+  ws.on("close", () => {
+    console.log(`❌ Closed: ${ws.sessionId}`);
+  });
 });
 
-// 📦 merge для конкретной сессии
+// 📦 Объединение чанков для конкретной сессии
 app.get("/merge", (req, res) => {
   try {
-    const session = req.query.session;
-    if (!session) return res.status(400).send("No session provided");
+    const session = (req.query.session || "").toString().trim();
+    if (!session) return res.status(400).send("No session");
 
-    const files = fs.readdirSync(".").filter(f => f.startsWith(session + "_chunk_"));
-    if (!files.length) return res.status(404).send("No files for this session");
+    const files = fs.readdirSync(".")
+      .filter(f => f.startsWith(`${session}_chunk_`))
+      .sort((a, b) => {
+        const na = +a.match(/chunk_(\d+)/)[1];
+        const nb = +b.match(/chunk_(\d+)/)[1];
+        return na - nb;
+      });
 
+    if (!files.length) return res.status(404).send("No chunks for session");
+
+    const headerSize = 44;
     const first = fs.readFileSync(files[0]);
     const sampleRate = first.readUInt32LE(24);
-    const headerSize = 44;
+
     const pcms = files.map(f => fs.readFileSync(f).subarray(headerSize));
     const totalPCM = Buffer.concat(pcms);
 
+    // создаём новый заголовок WAV
     const byteLen = totalPCM.length;
     const header = Buffer.alloc(44);
     header.write("RIFF", 0);
@@ -70,9 +93,12 @@ app.get("/merge", (req, res) => {
     const merged = Buffer.concat([header, totalPCM]);
     const mergedFile = `${session}_merged.wav`;
     fs.writeFileSync(mergedFile, merged);
+
+    console.log(`🧩 Created ${mergedFile}`);
+    res.setHeader("Content-Type", "audio/wav");
     res.download(mergedFile);
   } catch (err) {
-    console.error(err);
+    console.error("❌ Merge error:", err);
     res.status(500).send("Merge error");
   }
 });
@@ -86,12 +112,12 @@ function floatToWav(float32Array, sampleRate = 44100) {
   view.setUint32(8, 0x57415645, false); // "WAVE"
   view.setUint32(12, 0x666d7420, false); // "fmt "
   view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // mono
   view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
+  view.setUint32(28, sampleRate * 2, true); // byte rate
+  view.setUint16(32, 2, true); // block align
+  view.setUint16(34, 16, true); // bits per sample
   view.setUint32(36, 0x64617461, false); // "data"
   view.setUint32(40, float32Array.length * 2, true);
 
