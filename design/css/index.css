@@ -24,14 +24,17 @@ body.menu-open #overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 80%;             /* 📱 меню теперь 80% ширины */
-  max-width: 400px;       /* 💻 ограничение для десктопа */
+  width: 80%;             /* 📱 80% ширины */
+  max-width: 400px;       /* 💻 ограничение */
   height: 100%;
   background: #fff;
   box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(-100%);
   transition: transform 0.4s ease;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* футер прижат вниз */
 }
 
 /* Шапка меню */
@@ -53,17 +56,34 @@ body.menu-open #overlay {
   border: none;
   cursor: pointer;
 }
+
+/* Список меню */
 .menu-list {
   list-style: none;
   margin: 0;
-  padding: 15px;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .menu-list li {
-  margin: 10px 0;
+  margin: 5px 0;
 }
 .menu-list a {
+  display: block;
+  padding: 15px 20px;
   text-decoration: none;
   color: #222;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+.menu-list a:hover {
+  background: #f0f0f0;
+}
+
+/* Активный пункт меню */
+.menu-list a.active {
+  background: #e5e5e5; /* тот самый серый цвет */
 }
 
 /* Контейнер страницы */
@@ -90,27 +110,38 @@ body.menu-open #side-menu {
   }
 }
 
-/* Хедер, контент, футер */
+/* Хедер */
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center; /* логотип по центру */
   padding: 10px 20px;
   border-bottom: 1px solid #ccc;
+  position: relative;
 }
 #menu-toggle {
+  position: absolute;
+  left: 20px;
   font-size: 24px;
   background: none;
   border: none;
   cursor: pointer;
 }
+#logo {
+  font-weight: bold;
+}
+
+/* Контент */
 main {
   text-align: center;
   padding: 2em;
 }
+
+/* Футер */
 footer {
   text-align: center;
   font-size: 14px;
   border-top: 1px solid #ccc;
   padding: 10px 0;
+  margin-top: auto; /* прижатие к низу */
 }
