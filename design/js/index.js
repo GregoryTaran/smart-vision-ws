@@ -14,28 +14,43 @@ document.getElementById("footer").innerHTML = `
   <small>© 2025 Smart Vision</small>
 `;
 
-// определяем — телефон или десктоп
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
+function isMobileDevice() {
+  return window.matchMedia("(max-width: 768px)").matches;
+}
 
-if (isMobile) {
-  toggle.addEventListener("click", () => document.body.classList.toggle("menu-open"));
-  overlay.addEventListener("click", () => document.body.classList.remove("menu-open"));
+function openMenu() {
+  document.body.classList.add("menu-open");
+  if (isMobileDevice()) {
+    document.getElementById("page-wrapper").style.background = "#ececec";
+  }
+}
 
-  // свайп для закрытия
+function closeMenu() {
+  document.body.classList.remove("menu-open");
+  if (isMobileDevice()) {
+    document.getElementById("page-wrapper").style.background = "#fff";
+  }
+}
+
+toggle.addEventListener("click", () => {
+  if (document.body.classList.contains("menu-open")) {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+});
+
+if (isMobileDevice()) {
+  overlay.addEventListener("click", closeMenu);
   let startX = 0, endX = 0;
   sideMenu.addEventListener("touchstart", e => startX = e.changedTouches[0].screenX, { passive: true });
   sideMenu.addEventListener("touchend", e => {
     endX = e.changedTouches[0].screenX;
-    if (startX - endX > 50) document.body.classList.remove("menu-open");
+    if (startX - endX > 50) closeMenu();
   }, { passive: true });
-
   sideMenu.addEventListener("click", e => {
-    if (e.target.id === "menu-close") document.body.classList.remove("menu-open");
+    if (e.target.id === "menu-close") closeMenu();
   });
-} else {
-  // 💻 десктоп — меню всегда открыто, overlay не нужен
-  document.body.classList.add("menu-open");
-  overlay.style.display = "none";
 }
 
 // активный пункт меню

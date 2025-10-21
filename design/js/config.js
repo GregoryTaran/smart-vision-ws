@@ -1,4 +1,3 @@
-// 🌐 Smart Vision config
 export const CONFIG = {
   BASE_URL: "https://test.smartvision.life/",
   API_URL: "https://test.smartvision.life/api/",
