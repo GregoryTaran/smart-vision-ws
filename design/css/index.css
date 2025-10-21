@@ -1,13 +1,29 @@
+:root{
+  --active-gray: #ececec; /* активный пункт */
+  --mobile-right: #f2f2f2; /* правая часть при выезде на мобиле */
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
 body {
   margin: 0;
   font-family: sans-serif;
   overflow-x: hidden;
 }
 
+/* Область, которую двигаем и которая держит футер внизу */
+#page-wrapper{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  transition: transform 0.4s ease, width 0.4s ease, background 0.3s ease;
+  background:#fff;
+}
+
+/* Поле клика для мобилы */
 #overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.15);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -18,12 +34,13 @@ body.menu-open #overlay {
   pointer-events: all;
 }
 
+/* Левое меню */
 #side-menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 80%;
-  max-width: 400px;
+  width: 80%;          /* мобила — 80% */
+  max-width: 400px;    /* на ПК открытая ширина 400px */
   height: 100%;
   background: #fff;
   box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
@@ -37,46 +54,85 @@ body.menu-open #side-menu {
   transform: translateX(0);
 }
 
-#page-wrapper {
-  transition: transform 0.4s ease, width 0.4s ease;
-  background: white;
+/* Движение страницы одинаково: ПК — 400px, мобила — 80% */
+@media (min-width: 769px){
+  body.menu-open #page-wrapper { transform: translateX(400px); }
+  #overlay{ display:none; } /* на ПК без затемнения */
+}
+@media (max-width: 768px){
+  body.menu-open #page-wrapper { transform: translateX(80%); }
 }
 
-@media (max-width: 768px) {
-  body.menu-open #page-wrapper {
-    transform: translateX(80%);
-  }
-}
-
-@media (min-width: 769px) {
-  #overlay { display: none; }
-}
-
-.menu-header {
+/* Шапка сайта */
+header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 80px;
-  padding: 0 15px;
-  background: #ffffff;
-  border-bottom: 1px solid #ddd;
+  justify-content: center;
+  height: 60px; /* как договорились */
+  padding: 0 20px;
+  border-bottom: 1px solid #ccc;
+  position: relative;
 }
-.menu-title {
-  font-weight: bold;
-  font-size: 18px;
-}
-.menu-close {
-  font-size: 22px;
+#menu-toggle {
+  position: absolute;
+  left: 20px;
+  font-size: 24px;
   background: none;
   border: none;
   cursor: pointer;
 }
+#logo-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+}
+#logo {
+  max-width: 350px; /* ограничение логотипа */
+  width: 100%;
+  height: auto;
+  display:block;
+}
 
+/* Контент */
+main {
+  flex:1;              /* тянется, чтобы футер ушёл вниз */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 24px;
+  text-align: center;  /* центрируем текст */
+}
+.main-block{ max-width: 720px; margin: 0 auto; }
+
+/* Футер — всегда внизу */
+footer {
+  text-align: center;
+  font-size: 14px;
+  border-top: 1px solid #ccc;
+  padding: 12px 0;
+  margin-top: auto;
+}
+
+/* Шапка меню */
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 15px;
+  background: #fff;       /* белая, как меню */
+  border-bottom: 1px solid #ddd;
+}
+.menu-title { font-weight: bold; font-size: 18px; }
+.menu-close { font-size: 22px; background: none; border: none; cursor: pointer; }
+
+/* Пункты меню */
 .menu-list {
   flex: 1;
   list-style: none;
   margin: 0;
-  padding: 10px 0;
+  padding: 8px 0;
   display: flex;
   flex-direction: column;
 }
@@ -86,37 +142,12 @@ body.menu-open #side-menu {
   text-decoration: none;
   color: #222;
   background: transparent;
-  transition: background 0.3s ease;
+  transition: background 0.2s ease;
 }
 .menu-list a:hover { background: #f7f7f7; }
-.menu-list a.active { background: #ececec; }
+.menu-list a.active { background: var(--active-gray); }
 
-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 80px;
-  padding: 0 20px;
-  border-bottom: 1px solid #ccc;
-  position: relative;
-}
-#menu-toggle {
-  position: absolute;
-  left: 20px;
-  font-size: 28px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-#logo {
-  font-weight: bold;
-  font-size: 20px;
-}
-
-footer {
-  text-align: center;
-  font-size: 14px;
-  border-top: 1px solid #ccc;
-  padding: 10px 0;
-  margin-top: auto;
+/* Мобильный серый фон правой части */
+@media (max-width: 768px){
+  body.menu-open #page-wrapper{ background: var(--mobile-right); }
 }
