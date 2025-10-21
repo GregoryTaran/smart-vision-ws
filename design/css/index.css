@@ -4,41 +4,85 @@ body {
   overflow-x: hidden;
 }
 
+/* Полупрозрачный фон */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+body.menu-open #overlay {
+  opacity: 1;
+  pointer-events: all;
+}
+
 /* Меню */
 #side-menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 80%;             /* для телефона */
-  max-width: 400px;       /* для десктопа */
+  width: 80%;             /* 📱 меню теперь 80% ширины */
+  max-width: 400px;       /* 💻 ограничение для десктопа */
   height: 100%;
-  background: #f8f8f8;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
   transform: translateX(-100%);
   transition: transform 0.4s ease;
   z-index: 10;
-  padding: 1em;
 }
 
-/* Контейнер всей страницы */
+/* Шапка меню */
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f4f4f4;
+  border-bottom: 1px solid #ccc;
+}
+.menu-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+.menu-close {
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 15px;
+}
+.menu-list li {
+  margin: 10px 0;
+}
+.menu-list a {
+  text-decoration: none;
+  color: #222;
+}
+
+/* Контейнер страницы */
 #page-wrapper {
   transition: transform 0.4s ease, width 0.4s ease;
   background: white;
 }
-
-/* Открытие меню */
 body.menu-open #side-menu {
   transform: translateX(0);
 }
 
-/* 📱 Телефон — страница сдвигается вправо */
+/* 📱 Телефон — страница смещается на 80% */
 @media (max-width: 768px) {
   body.menu-open #page-wrapper {
     transform: translateX(80%);
   }
 }
 
-/* 💻 Десктоп — страница сжимается */
+/* 💻 Десктоп — страница сжимается на 400px */
 @media (min-width: 769px) {
   body.menu-open #page-wrapper {
     width: calc(100% - 400px);
@@ -54,19 +98,16 @@ header {
   padding: 10px 20px;
   border-bottom: 1px solid #ccc;
 }
-
 #menu-toggle {
   font-size: 24px;
   background: none;
   border: none;
   cursor: pointer;
 }
-
 main {
   text-align: center;
   padding: 2em;
 }
-
 footer {
   text-align: center;
   font-size: 14px;
