@@ -7,13 +7,19 @@
   <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
+  <!-- Левое меню -->
   <nav id="side-menu"></nav>
+
+  <!-- Фон клика для мобилы -->
   <div id="overlay"></div>
 
+  <!-- Вся страница (то, что двигаем) -->
   <div id="page-wrapper">
     <header>
-      <button id="menu-toggle">☰</button>
-      <div id="logo">ЛОГО КАРТИНКА</div>
+      <button id="menu-toggle" aria-label="Открыть меню">☰</button>
+      <div id="logo-wrap">
+        <img src="assets/logo400.jpg" alt="Smart Vision" id="logo" />
+      </div>
     </header>
 
     <main id="content">
