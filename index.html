@@ -122,9 +122,10 @@
                   window.navigator.standalone === true;
 
     if (isPWA) {
-      statusText.textContent = 'Smart Vision установлено';
-      installedControls.style.display = 'block';
+      // Если уже в PWA — ничего не показываем наверху
+      document.getElementById('topSection').style.display = 'none';
     } else {
+      // Если не установлено — разрешаем установку
       statusText.textContent = 'Smart Vision не установлено';
     }
 
@@ -132,8 +133,10 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.style.display = 'inline-block';
-      statusText.textContent = 'Можно установить приложение';
+      if (!isPWA) {
+        installBtn.style.display = 'inline-block';
+        statusText.textContent = 'Можно установить приложение';
+      }
     });
 
     installBtn.addEventListener('click', async () => {
