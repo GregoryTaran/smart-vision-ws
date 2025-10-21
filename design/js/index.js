@@ -14,31 +14,31 @@ document.getElementById("footer").innerHTML = `
   <small>© 2025 Smart Vision</small>
 `;
 
-// --- открытие/закрытие меню ---
-toggle.addEventListener("click", toggleMenu);
-overlay.addEventListener("click", closeMenu);
+// определяем — телефон или десктоп
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-function toggleMenu() {
-  document.body.classList.toggle("menu-open");
+if (isMobile) {
+  toggle.addEventListener("click", () => document.body.classList.toggle("menu-open"));
+  overlay.addEventListener("click", () => document.body.classList.remove("menu-open"));
+
+  // свайп для закрытия
+  let startX = 0, endX = 0;
+  sideMenu.addEventListener("touchstart", e => startX = e.changedTouches[0].screenX, { passive: true });
+  sideMenu.addEventListener("touchend", e => {
+    endX = e.changedTouches[0].screenX;
+    if (startX - endX > 50) document.body.classList.remove("menu-open");
+  }, { passive: true });
+
+  sideMenu.addEventListener("click", e => {
+    if (e.target.id === "menu-close") document.body.classList.remove("menu-open");
+  });
+} else {
+  // 💻 десктоп — меню всегда открыто, overlay не нужен
+  document.body.classList.add("menu-open");
+  overlay.style.display = "none";
 }
-function closeMenu() {
-  document.body.classList.remove("menu-open");
-}
 
-// --- свайп влево для закрытия ---
-let startX = 0, endX = 0;
-sideMenu.addEventListener("touchstart", e => startX = e.changedTouches[0].screenX, { passive: true });
-sideMenu.addEventListener("touchend", e => {
-  endX = e.changedTouches[0].screenX;
-  if (startX - endX > 50) closeMenu();
-}, { passive: true });
-
-// --- кнопка ← закрывает меню ---
-sideMenu.addEventListener("click", e => {
-  if (e.target.id === "menu-close") closeMenu();
-});
-
-// --- активный пункт меню ---
+// активный пункт меню
 sideMenu.addEventListener("click", e => {
   if (e.target.tagName === "A") {
     sideMenu.querySelectorAll("a").forEach(a => a.classList.remove("active"));
