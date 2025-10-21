@@ -1,46 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Vision Test</title>
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#ffffff" />
-  <link rel="icon" href="/icons/icon-192.png" />
+<script>
+let deferredPrompt;
 
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: system-ui, sans-serif;
-      color: #333;
-      background: #f5f5f5;
-      text-align: center;
-      margin: 0;
-    }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-    p {
-      color: #666;
-    }
-  </style>
-</head>
-<body>
-  <h1>Smart Vision Test PWA</h1>
-  <p>App is ready for installation 🚀</p>
+// Проверка: если PWA уже установлено
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  document.body.innerHTML = `
+    <h1>Smart Vision уже установлено ✅</h1>
+    <p>Открой приложение со своего экрана</p>
+  `;
+} else {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallButton();
+  });
+}
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/service-worker.js')
-        .then(() => console.log('✅ Service Worker registered'))
-        .catch(err => console.error('❌ SW registration failed:', err));
+function showInstallButton() {
+  const btn = document.createElement('button');
+  btn.textContent = 'Установить Smart Vision';
+  btn.style = `
+    padding:12px 24px;
+    font-size:16px;
+    font-weight:600;
+    background:#000;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+  `;
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', async () => {
+    btn.remove();
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('✅ Установлено');
+    } else {
+      console.log('❌ Отказано');
     }
-  </script>
-</body>
-</html>
+    deferredPrompt = null;
+  });
+}
+</script>
