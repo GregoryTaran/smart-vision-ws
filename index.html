@@ -3,62 +3,136 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Vision Test</title>
+  <title>Smart Vision</title>
 
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#ffffff" />
   <link rel="icon" href="/icons/icon-192.png" />
+
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding-top: 60px;
+      background: #f5f5f5;
+      font-family: system-ui, sans-serif;
+      color: #222;
+      margin: 0;
+      text-align: center;
+    }
+    #topSection {
+      margin-bottom: 60px;
+    }
+    button {
+      padding: 14px 30px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    #installBtn {
+      background: #000;
+      color: #fff;
+    }
+    #installBtn:hover {
+      background: #333;
+    }
+    #openBtn {
+      background: #008f3e;
+      color: #fff;
+    }
+    #openBtn:hover {
+      background: #00a54a;
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      line-height: 1.6;
+      max-width: 400px;
+      color: #444;
+      margin: 0.3rem 0;
+    }
+    footer {
+      margin-top: 40px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 
-<body style="font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#f5f5f5;color:#222;text-align:center;">
-  <h1>Smart Vision Test</h1>
-  <p>Проверка установки PWA</p>
+<body>
+  <div id="topSection">
+    <p id="statusText">Загрузка...</p>
+    <button id="installBtn" style="display:none;">Установить приложение</button>
+    <div id="installedControls" style="display:none;">
+      <p>Приложение здесь ✅</p>
+      <button id="openBtn">Открыть приложение</button>
+    </div>
+  </div>
+
+  <h1>Smart Vision</h1>
+  <p>Любая мысль может стать визией.</p>
+  <p>Любая визия может стать дорогой.</p>
+  <p>А дорога — источником внутреннего света.</p>
+
+  <footer>Грег Таран | 2025</footer>
 
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js');
-  }
-  </script>
+    const installBtn = document.getElementById('installBtn');
+    const installedControls = document.getElementById('installedControls');
+    const openBtn = document.getElementById('openBtn');
+    const statusText = document.getElementById('statusText');
+    const contextUrl = 'https://test.smartvision.life/context.html';
+    let deferredPrompt;
 
-  <script>
-  let deferredPrompt;
+    // Регистрация сервис-воркера
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
 
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    document.body.innerHTML = `
-      <h1>Smart Vision уже установлено ✅</h1>
-      <p>Открой приложение со своего экрана</p>
-    `;
-  } else {
+    // Проверяем, установлено ли приложение
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                  window.navigator.standalone === true;
+
+    if (isPWA) {
+      statusText.textContent = 'Smart Vision установлено';
+      installedControls.style.display = 'block';
+    } else {
+      statusText.textContent = 'Smart Vision не установлено';
+    }
+
+    // Показываем кнопку установки, когда возможно
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      showInstallButton();
+      installBtn.style.display = 'inline-block';
+      statusText.textContent = 'Можно установить приложение';
     });
-  }
 
-  function showInstallButton() {
-    const btn = document.createElement('button');
-    btn.textContent = 'Установить Smart Vision';
-    btn.style = `
-      padding:12px 24px;
-      font-size:16px;
-      font-weight:600;
-      background:#000;
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-    `;
-    document.body.appendChild(btn);
-
-    btn.addEventListener('click', async () => {
-      btn.remove();
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log('User response:', outcome);
+      if (outcome === 'accepted') {
+        statusText.textContent = '✅ Приложение установлено';
+        installBtn.style.display = 'none';
+        installedControls.style.display = 'block';
+      } else {
+        statusText.textContent = '❌ Установка отменена';
+      }
       deferredPrompt = null;
     });
-  }
+
+    openBtn.addEventListener('click', () => {
+      window.location.href = contextUrl;
+    });
   </script>
 </body>
 </html>
