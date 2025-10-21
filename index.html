@@ -1,9 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="refresh" content="0; URL='/context.html'" />
-  </head>
-  <body>
-    <p>Redirecting to <a href="/context.html">/context.html</a>…</p>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Vision Test</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/icons/icon-192.png" />
+
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: system-ui, sans-serif;
+      color: #333;
+      background: #f5f5f5;
+      text-align: center;
+      margin: 0;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Vision Test PWA</h1>
+  <p>App is ready for installation 🚀</p>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(() => console.log('✅ Service Worker registered'))
+        .catch(err => console.error('❌ SW registration failed:', err));
+    }
+  </script>
+</body>
 </html>
