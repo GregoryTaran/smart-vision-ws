@@ -37,3 +37,11 @@ sideMenu.addEventListener("touchend", e => {
 sideMenu.addEventListener("click", e => {
   if (e.target.id === "menu-close") closeMenu();
 });
+
+// --- активный пункт меню ---
+sideMenu.addEventListener("click", e => {
+  if (e.target.tagName === "A") {
+    sideMenu.querySelectorAll("a").forEach(a => a.classList.remove("active"));
+    e.target.classList.add("active");
+  }
+});
