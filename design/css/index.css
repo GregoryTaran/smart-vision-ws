@@ -4,7 +4,6 @@ body {
   overflow-x: hidden;
 }
 
-/* --- overlay для телефона --- */
 #overlay {
   position: fixed;
   inset: 0;
@@ -19,7 +18,6 @@ body.menu-open #overlay {
   pointer-events: all;
 }
 
-/* --- меню --- */
 #side-menu {
   position: fixed;
   top: 0;
@@ -35,47 +33,32 @@ body.menu-open #overlay {
   display: flex;
   flex-direction: column;
 }
-
 body.menu-open #side-menu {
   transform: translateX(0);
 }
 
-/* 📱 Телефон — страница сдвигается на 80% */
+#page-wrapper {
+  transition: transform 0.4s ease, width 0.4s ease;
+  background: white;
+}
+
 @media (max-width: 768px) {
   body.menu-open #page-wrapper {
     transform: translateX(80%);
   }
 }
 
-/* 💻 Десктоп — меню постоянно открыто */
 @media (min-width: 769px) {
-  #overlay {
-    display: none;
-  }
-  #side-menu {
-    transform: translateX(0);
-    width: 400px;
-    box-shadow: none;
-    border-right: 1px solid #ddd;
-  }
-  #page-wrapper {
-    width: calc(100% - 400px);
-    margin-left: 400px;
-  }
-  #menu-toggle,
-  .menu-close {
-    display: none;
-  }
+  #overlay { display: none; }
 }
 
-/* --- шапка меню --- */
 .menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
+  height: 80px;
   padding: 0 15px;
-  background: #ffffff; /* белая */
+  background: #ffffff;
   border-bottom: 1px solid #ddd;
 }
 .menu-title {
@@ -89,7 +72,6 @@ body.menu-open #side-menu {
   cursor: pointer;
 }
 
-/* --- пункты меню --- */
 .menu-list {
   flex: 1;
   list-style: none;
@@ -106,19 +88,14 @@ body.menu-open #side-menu {
   background: transparent;
   transition: background 0.3s ease;
 }
-.menu-list a:hover {
-  background: #f7f7f7;
-}
-.menu-list a.active {
-  background: #ececec; /* серый как правая часть */
-}
+.menu-list a:hover { background: #f7f7f7; }
+.menu-list a.active { background: #ececec; }
 
-/* --- верхняя панель с логотипом --- */
 header {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 80px; /* вернули простор */
+  height: 80px;
   padding: 0 20px;
   border-bottom: 1px solid #ccc;
   position: relative;
@@ -136,7 +113,6 @@ header {
   font-size: 20px;
 }
 
-/* --- футер --- */
 footer {
   text-align: center;
   font-size: 14px;
