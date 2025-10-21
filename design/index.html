@@ -7,14 +7,30 @@
   <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
-  <!-- Верхний блок (меню, логотип, кнопка) -->
-  <header id="header"></header>
+  <!-- Левое меню -->
+  <nav id="side-menu"></nav>
 
-  <!-- Основной контент -->
-  <main id="content"></main>
+  <!-- Вся страница -->
+  <div id="page-wrapper">
+    <header>
+      <button id="menu-toggle">☰</button>
+      <div id="logo">ЛОГО КАРТИНКА</div>
+    </header>
 
-  <!-- Нижний блок (футер) -->
-  <footer id="footer"></footer>
+    <main id="content">
+      <section class="main-block">
+        <h2>ОСНОВНОЙ БЛОК</h2>
+        <p>
+          Любая мысль может стать визией.<br />
+          Любая визия может стать дорогой.<br />
+          А дорога — источником внутреннего света.
+        </p>
+        <p>Грег Таран | 2025</p>
+      </section>
+    </main>
+
+    <footer id="footer"></footer>
+  </div>
 
   <script type="module" src="js/index.js"></script>
 </body>
