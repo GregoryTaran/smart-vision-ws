@@ -1,45 +1,64 @@
-<script>
-let deferredPrompt;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Vision Test</title>
 
-// Проверка: если PWA уже установлено
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  document.body.innerHTML = `
-    <h1>Smart Vision уже установлено ✅</h1>
-    <p>Открой приложение со своего экрана</p>
-  `;
-} else {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallButton();
-  });
-}
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/icons/icon-192.png" />
+</head>
 
-function showInstallButton() {
-  const btn = document.createElement('button');
-  btn.textContent = 'Установить Smart Vision';
-  btn.style = `
-    padding:12px 24px;
-    font-size:16px;
-    font-weight:600;
-    background:#000;
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-  `;
-  document.body.appendChild(btn);
+<body style="font-family:system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#f5f5f5;color:#222;text-align:center;">
+  <h1>Smart Vision Test</h1>
+  <p>Проверка установки PWA</p>
 
-  btn.addEventListener('click', async () => {
-    btn.remove();
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('✅ Установлено');
-    } else {
-      console.log('❌ Отказано');
-    }
-    deferredPrompt = null;
-  });
-}
-</script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js');
+  }
+  </script>
+
+  <script>
+  let deferredPrompt;
+
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    document.body.innerHTML = `
+      <h1>Smart Vision уже установлено ✅</h1>
+      <p>Открой приложение со своего экрана</p>
+    `;
+  } else {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallButton();
+    });
+  }
+
+  function showInstallButton() {
+    const btn = document.createElement('button');
+    btn.textContent = 'Установить Smart Vision';
+    btn.style = `
+      padding:12px 24px;
+      font-size:16px;
+      font-weight:600;
+      background:#000;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+    `;
+    document.body.appendChild(btn);
+
+    btn.addEventListener('click', async () => {
+      btn.remove();
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('User response:', outcome);
+      deferredPrompt = null;
+    });
+  }
+  </script>
+</body>
+</html>
