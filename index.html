@@ -23,9 +23,11 @@
       margin: 0;
       text-align: center;
     }
+
     #topSection {
       margin-bottom: 60px;
     }
+
     button {
       padding: 14px 30px;
       font-size: 18px;
@@ -35,6 +37,7 @@
       cursor: pointer;
       transition: 0.25s;
     }
+
     #installBtn {
       background: #000;
       color: #fff;
@@ -42,6 +45,7 @@
     #installBtn:hover {
       background: #333;
     }
+
     #openBtn {
       background: #008f3e;
       color: #fff;
@@ -49,16 +53,29 @@
     #openBtn:hover {
       background: #00a54a;
     }
+
+    #contextBtn {
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      margin-top: 2rem;
+    }
+    #contextBtn:hover {
+      background: #e9e9e9;
+    }
+
     h1 {
       font-size: 1.6rem;
       margin-bottom: 0.5rem;
     }
+
     p {
       line-height: 1.6;
       max-width: 400px;
       color: #444;
       margin: 0.3rem 0;
     }
+
     footer {
       margin-top: 40px;
       color: #777;
@@ -82,14 +99,17 @@
   <p>Любая визия может стать дорогой.</p>
   <p>А дорога — источником внутреннего света.</p>
 
+  <button id="contextBtn">Перейти к контексту</button>
+
   <footer>Грег Таран | 2025</footer>
 
   <script>
     const installBtn = document.getElementById('installBtn');
     const installedControls = document.getElementById('installedControls');
     const openBtn = document.getElementById('openBtn');
+    const contextBtn = document.getElementById('contextBtn');
     const statusText = document.getElementById('statusText');
-    const contextUrl = 'https://test.smartvision.life/context.html';
+    const contextUrl = '/context.html';
     let deferredPrompt;
 
     // Регистрация сервис-воркера
@@ -131,6 +151,11 @@
     });
 
     openBtn.addEventListener('click', () => {
+      window.location.href = contextUrl;
+    });
+
+    // Переход на контекст внутри окна
+    contextBtn.addEventListener('click', () => {
       window.location.href = contextUrl;
     });
   </script>
