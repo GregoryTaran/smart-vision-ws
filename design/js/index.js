@@ -1,4 +1,4 @@
-// ======== Smart Vision index.js v3.10 (restore logic + v3.6 loader) ========
+// ======== Smart Vision index.js v3.10.1 (restore + DOM fix) ========
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -12,17 +12,23 @@ const STATE = {
   uiFlags: { menuOpen: false, debugVisible: false }
 };
 
-const root = {
-  header: document.querySelector("header"),
-  menu: document.getElementById("side-menu"),
-  main: document.getElementById("content"),
-  footer: document.getElementById("footer"),
-  overlay: document.getElementById("overlay")
-};
+const root = {};
 
-// ---------- INIT ----------
-window.addEventListener("DOMContentLoaded", () => {
-  // применяем env от загрузчика
+// DOM READY гарант
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+
+function init() {
+  // получаем элементы только когда DOM готов
+  root.header = document.querySelector("header");
+  root.menu = document.getElementById("side-menu");
+  root.main = document.getElementById("content");
+  root.footer = document.getElementById("footer");
+  root.overlay = document.getElementById("overlay");
+
   document.body.dataset.env = STATE.env;
   document.body.classList.toggle("menu-open", STATE.env === "desktop");
   STATE.uiFlags.menuOpen = STATE.env === "desktop";
@@ -32,8 +38,8 @@ window.addEventListener("DOMContentLoaded", () => {
   initSwipe();
   updateEnvButton();
 
-  console.log(`✅ Environment: ${STATE.env}`);
-});
+  console.log(`✅ Smart Vision initialized (${STATE.env})`);
+}
 
 // ---------- RENDER ----------
 function renderApp() {
