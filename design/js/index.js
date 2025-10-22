@@ -26,7 +26,7 @@ const root = {
 
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
-  detectAndLoadEnvCSS();   // ← добавлено: выбор и загрузка стиля
+  detectAndLoadEnvCSS();   // ← выбор и загрузка стиля
   renderApp();
   attachGlobalEvents();
   initSwipe();
@@ -46,8 +46,15 @@ function detectAndLoadEnvCSS() {
   const env = detectEnv();
   STATE.env = env;
   document.body.dataset.env = env;
-  document.body.classList.toggle("menu-open", env === "desktop");
-  STATE.uiFlags.menuOpen = env === "desktop";
+
+  // ✅ исправлено: меню закрыто на мобиле, открыто на десктопе
+  if (env === "desktop") {
+    document.body.classList.add("menu-open");
+    STATE.uiFlags.menuOpen = true;
+  } else {
+    document.body.classList.remove("menu-open");
+    STATE.uiFlags.menuOpen = false;
+  }
 
   // загружаем только нужный стиль
   const cssFile = `css/${env}.css`;
@@ -61,7 +68,6 @@ function detectAndLoadEnvCSS() {
 function applyEnv() {
   const env = detectEnv();
   if (STATE.env !== env) {
-    // если размер экрана изменился, просим обновить страницу
     console.log("🔄 Среда изменилась. Для корректного отображения обновите страницу (F5).");
   }
 }
