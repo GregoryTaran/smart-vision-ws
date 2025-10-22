@@ -1,5 +1,6 @@
-// ======== Smart Vision UI System (v3.7 sync) ========
-// Среда определяется в index.html — здесь только логика и динамическая отрисовка.
+// ======== Smart Vision UI System (v3.8) ========
+// Среда определяется в index.html (window.SMART_ENV)
+// Этот файл отвечает за динамическую отрисовку, состояние и реакцию интерфейса.
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -38,7 +39,6 @@ window.addEventListener("DOMContentLoaded", () => {
 // ---------- INITIAL SETUP ----------
 function setupInitialState() {
   document.body.dataset.env = STATE.env;
-
   if (STATE.env === "desktop") {
     document.body.classList.add("menu-open");
     STATE.uiFlags.menuOpen = true;
@@ -48,7 +48,7 @@ function setupInitialState() {
   }
 }
 
-// ========== RENDER APP ==========
+// ========== RENDER ==========
 function renderApp() {
   renderHeader();
   renderMenuBlock();
@@ -82,28 +82,29 @@ function renderMain() {
   const content = {
     home: `
       <section class="main-block">
-        <h2>Главная страница</h2>
-        <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p>
+        <h2>Ясность начинается здесь</h2>
+        <p>Smart Vision чувствует контекст. Сейчас ты находишься в среде: <b>${STATE.env}</b>.</p>
+        <p>Интерфейс подстраивается под тебя и показывает только то, что важно.</p>
       </section>`,
     about: `
       <section class="main-block">
         <h2>О проекте</h2>
-        <p>Smart Vision — это архитектура присутствия, фокуса и интеллекта. Здесь каждый элемент интерфейса живой и динамичный.</p>
+        <p>Smart Vision — это система, где интеллект становится формой присутствия. Всё управляется состоянием (STATE), без лишнего кода и случайностей.</p>
       </section>`,
     policy: `
       <section class="main-block">
         <h2>Политика конфиденциальности</h2>
-        <p>Smart Vision ценит вашу конфиденциальность и соблюдает законы обработки данных. Мы защищаем всё, что передаётся пользователем.</p>
+        <p>Smart Vision ценит твоё внимание и данные. Мы не храним личную информацию, кроме необходимого для работы системы.</p>
       </section>`,
     terms: `
       <section class="main-block">
         <h2>Условия использования</h2>
-        <p>Используя Smart Vision, вы соглашаетесь с принципами ясности, фокуса, интеллекта и свободы.</p>
+        <p>Используя Smart Vision, ты соглашаешься с принципами ясности, фокуса и интеллекта как формы взаимодействия.</p>
       </section>`,
     notfound: `
       <section class="main-block">
         <h2>Страница не найдена</h2>
-        <p>Похоже, вы перешли по несуществующему адресу.</p>
+        <p>Возможно, ты ищешь то, чего ещё нет. Но всё начинается с намерения.</p>
       </section>`
   };
 
@@ -113,24 +114,35 @@ function renderMain() {
 // ---------- FOOTER ----------
 function renderFooter() {
   root.footer.innerHTML = `
-    <a href="#policy">Политика</a> |
-    <a href="#terms">Условия</a>
-    <br><small>© 2025 Smart Vision</small>
+    <div class="footer-links">
+      <a href="#home">Главная</a> |
+      <a href="#policy">Политика</a> |
+      <a href="#terms">Условия</a>
+    </div>
+    <br>
+    <small>© 2025 Smart Vision</small>
     <div style="margin-top:10px;">
-      <button id="env-btn" class="env-btn">${formatState()}</button>
+      <button id="env-btn" class="env-btn">Проверить состояние</button>
     </div>
   `;
+
+  const btn = document.getElementById("env-btn");
+  if (btn) {
+    btn.onclick = () => {
+      alert(`📋 Текущее состояние:\n\n${formatState()}`);
+    };
+  }
 }
 
-// ---------- STATE BUTTON ----------
+// ---------- STATE FORMATTER ----------
 function formatState() {
   const { env, user, page, uiFlags } = STATE;
-  return `{ env:${env}, user:${user ? user.name : "guest"}, page:${page}, menu:${uiFlags.menuOpen} }`;
+  return JSON.stringify({ env, user: user ? user.name : "guest", page, uiFlags }, null, 2);
 }
 
 function updateEnvButton() {
   const btn = document.getElementById("env-btn");
-  if (btn) btn.textContent = formatState();
+  if (btn) btn.textContent = "Проверить состояние";
 }
 
 // ---------- EVENTS ----------
