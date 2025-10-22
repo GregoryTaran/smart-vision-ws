@@ -27,3 +27,9 @@ body[data-env="mobile"].menu-open #overlay {
 body[data-env="mobile"] #menu-toggle { display: block; }
 body[data-env="mobile"] .menu-close { display: block; }
 body[data-env="mobile"] .menu-title { font-size: 17px; }
+
+/* MOBILE — логотип */
+body[data-env="mobile"] #logo {
+  max-width: 260px;
+  height: auto;
+}

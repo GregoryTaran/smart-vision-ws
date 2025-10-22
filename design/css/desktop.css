@@ -6,6 +6,14 @@ body[data-env="desktop"] #side-menu {
   left: 0;
 }
 
+/* DESKTOP — левое меню фикс ширины */
+body[data-env="desktop"] #side-menu {
+  width: var(--menu-desktop) !important; /* 400px гарантировано */
+  min-width: var(--menu-desktop);
+  max-width: var(--menu-desktop);
+}
+
+
 body[data-env="desktop"] header,
 body[data-env="desktop"] main,
 body[data-env="desktop"] footer {
@@ -28,4 +36,18 @@ body[data-env="desktop"] .menu-header {
 body[data-env="desktop"] .menu-list a:hover,
 body[data-env="desktop"] .menu-list a.active {
   background: #ececec;
+}
+/* DESKTOP — фикс верхнего меню */
+body[data-env="desktop"] header {
+  position: fixed;
+  top: 0;
+  left: var(--menu-desktop);
+  right: 0;
+  height: 60px;
+  z-index: 8;
+}
+
+/* и компенсируем высоту, чтобы контент не ушёл под header */
+body[data-env="desktop"] main {
+  padding-top: 60px;
 }
