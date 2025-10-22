@@ -1,6 +1,6 @@
-// ======== Smart Vision UI System (v2.8) ========
-// CSS подгружается по STATE.env
-// меню закрывается на мобильном при переходе и свайпе
+// ======== Smart Vision UI System (v2.8-fix) ========
+// Исправлено подключение CSS (относительный путь для /design/)
+// Меню закрывается на мобильном при переходе и свайпе
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -72,7 +72,9 @@ function loadCSS(name) {
   const link = document.createElement("link");
   link.id = id;
   link.rel = "stylesheet";
-  link.href = `/css/${name}.css`;
+  link.href = `css/${name}.css`; // ✅ относительный путь
+  link.onload = () => console.log(`✅ CSS loaded: ${name}`);
+  link.onerror = () => console.warn(`⚠️ CSS not found: ${name}`);
   document.head.appendChild(link);
 }
 
