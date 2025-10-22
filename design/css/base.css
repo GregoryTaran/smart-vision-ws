@@ -1,4 +1,4 @@
-/* ======== Smart Vision Base (v3.5) ======== */
+/* ======== Smart Vision Base (v3.5 full) ======== */
 :root {
   --menu-desktop: 400px;
   --menu-mobile: 80%;
@@ -6,9 +6,16 @@
 }
 
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidden; }
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: sans-serif;
+  overflow-x: hidden;
+}
 
-header, main, footer { transition: margin-left 0.4s ease, transform 0.4s ease; }
+header, main, footer {
+  transition: margin-left 0.4s ease, transform 0.4s ease;
+}
 
 /* overlay */
 #overlay {
@@ -20,7 +27,10 @@ header, main, footer { transition: margin-left 0.4s ease, transform 0.4s ease; }
   transition: opacity 0.3s ease;
   z-index: 5;
 }
-body.menu-open #overlay { opacity: 1; pointer-events: all; }
+body.menu-open #overlay {
+  opacity: 1;
+  pointer-events: all;
+}
 
 /* side menu */
 #side-menu {
@@ -55,8 +65,19 @@ header {
 }
 
 /* логотип общий */
-#logo-wrap { display: flex; align-items: center; justify-content: center; width: 100%; }
-#logo { display: block; width: 100%; height: auto; object-fit: contain; transition: all 0.3s ease; }
+#logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+#logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
 
 main {
   flex: 1;
@@ -67,7 +88,10 @@ main {
   align-items: center;
   justify-content: center;
 }
-.main-block { max-width: 800px; margin: 0 auto; }
+.main-block {
+  max-width: 800px;
+  margin: 0 auto;
+}
 
 footer {
   text-align: center;
@@ -77,6 +101,7 @@ footer {
   background: #fff;
 }
 
+/* ======== Кнопка состояния ======== */
 .env-btn {
   display: inline-block;
   margin-top: 10px;
@@ -90,4 +115,53 @@ footer {
   cursor: pointer;
   transition: background 0.3s;
 }
-.env-btn:hover { background: #555; }
+.env-btn:hover {
+  background: #555;
+}
+
+/* ======== Общие стили меню ======== */
+.menu-header {
+  font-weight: bold;
+  padding: 16px;
+  border-bottom: 1px solid #ccc;
+  background: var(--gray-bg);
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.menu-list li {
+  border-bottom: 1px solid #eee;
+}
+
+.menu-list a {
+  display: block;
+  padding: 14px 18px;
+  color: #000;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.menu-list a:hover {
+  background: #f8f8f8;
+}
+
+.menu-list a.active {
+  background: #e8e8e8;
+  font-weight: bold;
+}
+
+.menu-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
