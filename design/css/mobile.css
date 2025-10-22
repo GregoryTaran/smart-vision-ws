@@ -1,113 +1,47 @@
-/* ======== Smart Vision Mobile (v3.9 Visual Restore) ======== */
+/* ======== Smart Vision Mobile (v3.5 • step1 mobile-restore tweak) ======== */
 
 body[data-env="mobile"] {
-  background: #fff;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-/* HEADER */
-body[data-env="mobile"] header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: #fff;
-  border-bottom: 1px solid var(--border-gray);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 18px;
-  z-index: 20;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-body[data-env="mobile"] #menu-toggle {
-  background: none;
-  border: none;
-  font-size: 26px;
-  color: #333;
-  cursor: pointer;
-}
-
+/* Логотип — вернуть старый размер 220px */
 body[data-env="mobile"] #logo {
-  width: 220px;
-  height: auto;
-  display: block;
+  max-width: 220px; /* was 260 */
   margin: 0 auto;
-  content: url("../assets/logo400.jpg");
+  padding: 8px 0;
 }
 
-/* SIDE MENU */
+/* Меню поверх контента, ширина по var(--menu-mobile) */
 body[data-env="mobile"] #side-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: var(--menu-mobile);
-  max-width: 340px;
-  height: 100vh;
-  background: var(--gray-bg);
-  border-right: 1px solid var(--border-gray);
   transform: translateX(-100%);
   transition: transform 0.4s ease;
-  padding: 25px 20px 40px;
-  overflow-y: auto;
-  z-index: 18;
+  z-index: 10; /* поверх overlay */
 }
 body[data-env="mobile"].menu-open #side-menu {
   transform: translateX(0);
 }
 
-/* MENU INSIDE */
-body[data-env="mobile"] #side-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-body[data-env="mobile"] #side-menu li {
-  margin: 12px 0;
-}
-body[data-env="mobile"] #side-menu a {
-  display: block;
-  padding: 10px 0;
-  color: #333;
-  font-size: 17px;
-  text-decoration: none;
-  border-bottom: 1px solid #e5e5e5;
-}
-body[data-env="mobile"] #side-menu a:hover {
-  color: var(--accent);
-}
+/* Overlay ниже меню */
+#overlay { z-index: 5; }
 
-/* MAIN */
+/* Основная часть */
 body[data-env="mobile"] main {
-  margin-top: 70px;
-  padding: 20px;
-  transition: transform 0.4s ease;
-}
-body[data-env="mobile"].menu-open main {
-  transform: translateX(70%);
+  flex: 1 0 auto;
+  padding-bottom: 70px;
 }
 
-/* TEXT & HEADERS */
-body[data-env="mobile"] h1,
-body[data-env="mobile"] h2,
-body[data-env="mobile"] h3 {
-  font-weight: 600;
-  color: #222;
-  margin: 15px 0 10px;
-}
-body[data-env="mobile"] p {
-  margin: 10px 0;
-}
-
-/* FOOTER */
+/* Футер (фиксирован — кнопка состояния всегда видна) */
 body[data-env="mobile"] footer {
-  text-align: center;
-  padding: 18px;
-  border-top: 1px solid var(--border-gray);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-top: 1px solid #ccc;
   background: #fff;
-  font-size: 14px;
-  color: #666;
-  z-index: 10;
+  padding: 12px 0;
+  text-align: center;
+  z-index: 9;
 }
