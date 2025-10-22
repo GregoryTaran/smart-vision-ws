@@ -8,7 +8,7 @@ body[data-env="mobile"] {
 
 /* Логотип */
 body[data-env="mobile"] #logo {
-  max-width: 260px;
+  max-width: 210px;
   margin: 0 auto;
   padding: 8px 0;
 }
