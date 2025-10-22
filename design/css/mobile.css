@@ -1,43 +1,110 @@
-/* ======== Smart Vision Mobile (v3.5) ======== */
+/* ======== Smart Vision Mobile (v3.7) ======== */
+/* Отдельная мобильная версия — плавное выезжающее меню и смещение контента. */
 
 body[data-env="mobile"] {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow: hidden;
+  font-size: 15px;
+  background: #fff;
+  color: #000;
 }
 
-/* Логотип */
-body[data-env="mobile"] #logo {
-  max-width: 210px;
-  margin: 0 auto;
-  padding: 8px 0;
+/* --- HEADER --- */
+body[data-env="mobile"] header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  z-index: 900;
 }
 
-/* Меню */
+/* --- LOGO --- */
+body[data-env="mobile"] header img.logo {
+  width: 140px;
+  height: auto;
+  content: url("../assets/logo_mobile.png");
+}
+
+/* --- MENU --- */
 body[data-env="mobile"] #side-menu {
-  width: var(--menu-mobile);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80%;
+  max-width: 340px;
+  height: 100vh;
+  background: #fefefe;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
   transform: translateX(-100%);
   transition: transform 0.4s ease;
+  z-index: 1000;
 }
+
 body[data-env="mobile"].menu-open #side-menu {
   transform: translateX(0);
 }
 
-/* Основная часть */
+/* --- MAIN --- */
 body[data-env="mobile"] main {
-  flex: 1 0 auto;
-  padding-bottom: 70px;
+  flex: 1;
+  padding: 80px 20px 80px;
+  transition: transform 0.4s ease;
+  z-index: 500;
+  position: relative;
 }
 
-/* Футер (прижат) */
+body[data-env="mobile"].menu-open main {
+  transform: translateX(70%);
+}
+
+/* --- FOOTER --- */
 body[data-env="mobile"] footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  border-top: 1px solid #ccc;
+  position: static;
+  height: 60px;
+  border-top: 1px solid #e0e0e0;
   background: #fff;
-  padding: 12px 0;
-  text-align: center;
-  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 600;
+}
+
+/* --- OVERLAY --- */
+body[data-env="mobile"] #overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 900;
+}
+
+body[data-env="mobile"].menu-open #overlay {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* --- ANIMATION HELPERS --- */
+body[data-env="mobile"] #side-menu,
+body[data-env="mobile"] main {
+  will-change: transform;
+}
+
+/* --- TOUCH AREA FOR SWIPE --- */
+@media (max-width: 768px) {
+  body[data-env="mobile"] {
+    touch-action: pan-y;
+  }
 }

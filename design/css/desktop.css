@@ -1,75 +1,91 @@
-/* ======== Smart Vision Desktop (v3.5.2) ======== */
+/* ======== Smart Vision Desktop (v3.7) ======== */
+/* Отдельная версия для ПК — фиксированное левое меню с возможностью скрытия. */
 
 body[data-env="desktop"] {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-x: hidden;
+  background: #fff;
+  color: #000;
+  font-size: 16px;
+  overflow-y: auto;
 }
 
-/* Логотип */
-body[data-env="desktop"] #logo {
-  max-width: 400px;
-  padding: 10px 0;
-}
-
-/* Меню фикс ширины */
+/* --- MENU --- */
 body[data-env="desktop"] #side-menu {
   position: fixed;
   top: 0;
   left: 0;
-
-  /* 🔹 Точная ширина */
-  width: var(--menu-desktop);
-  min-width: var(--menu-desktop);
-  max-width: var(--menu-desktop);
-
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  border: none;
-  flex-shrink: 0;
-  overflow-y: auto;
-
+  width: var(--menu-desktop, 400px);
   height: 100vh;
-  background: #fff;
-  box-shadow: 3px 0 10px rgba(0,0,0,0.1);
-  z-index: 10;
+  background: #fafafa;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  transition: transform 0.4s ease;
+  z-index: 1000;
 }
 
-/* Header (70px) */
+body[data-env="desktop"] #side-menu img.logo {
+  width: 180px;
+  margin-bottom: 30px;
+  content: url("../assets/logo_desktop.png");
+}
+
+/* Меню скрытое состояние */
+body[data-env="desktop"]:not(.menu-open) #side-menu {
+  transform: translateX(-100%);
+}
+
+/* --- HEADER --- */
 body[data-env="desktop"] header {
   position: fixed;
   top: 0;
-  left: var(--menu-desktop);
-  right: 0;
+  left: var(--menu-desktop, 400px);
   height: 70px;
-  z-index: 8;
+  width: calc(100% - var(--menu-desktop, 400px));
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #fff;
+  transition: left 0.4s ease, width 0.4s ease;
+}
+
+body[data-env="desktop"]:not(.menu-open) header {
+  left: 0;
+  width: 100%;
+}
+
+/* --- MAIN --- */
+body[data-env="desktop"] main {
+  margin-left: var(--menu-desktop, 400px);
+  padding: 100px 40px 80px;
+  transition: margin-left 0.4s ease;
+}
+
+body[data-env="desktop"]:not(.menu-open) main {
+  margin-left: 0;
+}
+
+/* --- FOOTER --- */
+body[data-env="desktop"] footer {
+  position: fixed;
+  bottom: 0;
+  left: var(--menu-desktop, 400px);
+  height: 60px;
+  width: calc(100% - var(--menu-desktop, 400px));
+  border-top: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
-  border-bottom: 1px solid #ccc;
+  transition: left 0.4s ease, width 0.4s ease;
 }
 
-/* Основная зона */
-body[data-env="desktop"] main {
-  flex: 1;
-  margin-left: var(--menu-desktop);
-  padding-top: 70px;
-  padding-bottom: 40px;
+body[data-env="desktop"]:not(.menu-open) footer {
+  left: 0;
+  width: 100%;
 }
 
-/* Футер */
-body[data-env="desktop"] footer {
-  margin-left: var(--menu-desktop);
-  position: relative;
-  width: calc(100% - var(--menu-desktop));
-  border-top: 1px solid #ccc;
-  background: #fff;
+/* --- OVERLAY --- */
+body[data-env="desktop"] #overlay {
+  display: none !important;
 }
-
-/* скрываем ненужные элементы */
-body[data-env="desktop"] #overlay { display: none !important; }
-body[data-env="desktop"] #menu-toggle,
-body[data-env="desktop"] .menu-close { display: none; }
