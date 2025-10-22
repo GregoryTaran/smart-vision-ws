@@ -1,4 +1,4 @@
-/* ======== Smart Vision Base (v2.9) ======== */
+/* ======== Smart Vision Base (v2.9.3) ======== */
 
 :root {
   --menu-desktop: 400px;
@@ -113,7 +113,6 @@ footer {
   background: #fff;
 }
 
-/* кнопка состояния */
 .env-btn {
   display: inline-block;
   margin-top: 10px;

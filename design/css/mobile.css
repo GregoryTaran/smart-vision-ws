@@ -1,4 +1,10 @@
-/* ======== Smart Vision Mobile (v2.9) ======== */
+/* ======== Smart Vision Mobile (v2.9.3) ======== */
+
+body[data-env="mobile"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* без 100dvh */
+}
 
 body[data-env="mobile"] #side-menu {
   width: var(--menu-mobile);
@@ -8,28 +14,30 @@ body[data-env="mobile"].menu-open #side-menu {
   transform: translateX(0);
 }
 
-body[data-env="mobile"] header,
-body[data-env="mobile"] main,
-body[data-env="mobile"] footer {
-  transform: none;
-}
-
-body[data-env="mobile"] #overlay {
-  opacity: 0;
-  pointer-events: none;
-}
-body[data-env="mobile"].menu-open #overlay {
-  opacity: 1;
-  pointer-events: all;
-}
-
-/* бургер видим, крестик работает */
 body[data-env="mobile"] #menu-toggle { display: block; }
 body[data-env="mobile"] .menu-close { display: block; }
-body[data-env="mobile"] .menu-title { font-size: 17px; }
 
-/* MOBILE — логотип */
+/* логотип меньше */
 body[data-env="mobile"] #logo {
   max-width: 260px;
   height: auto;
+}
+
+/* адаптивный футер */
+body[data-env="mobile"] main {
+  flex: 1 0 auto;
+  padding-bottom: 70px;
+}
+
+body[data-env="mobile"] footer {
+  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-top: 1px solid #ccc;
+  background: #fff;
+  padding: 12px 0;
+  text-align: center;
+  z-index: 9;
 }

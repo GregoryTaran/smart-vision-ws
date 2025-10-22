@@ -1,43 +1,19 @@
-/* ======== Smart Vision Desktop (v2.9) ======== */
+/* ======== Smart Vision Desktop (v2.9.3) ======== */
+
+body[data-env="desktop"] {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
 body[data-env="desktop"] #side-menu {
-  width: var(--menu-desktop);
+  width: var(--menu-desktop) !important;
+  min-width: var(--menu-desktop);
+  max-width: var(--menu-desktop);
   transform: translateX(0);
   left: 0;
 }
 
-/* DESKTOP — левое меню фикс ширины */
-body[data-env="desktop"] #side-menu {
-  width: var(--menu-desktop) !important; /* 400px гарантировано */
-  min-width: var(--menu-desktop);
-  max-width: var(--menu-desktop);
-}
-
-
-body[data-env="desktop"] header,
-body[data-env="desktop"] main,
-body[data-env="desktop"] footer {
-  margin-left: var(--menu-desktop);
-}
-
-body[data-env="desktop"] #overlay {
-  display: none !important;
-}
-
-/* скрываем бургер и крестик */
-body[data-env="desktop"] #menu-toggle { display: none; }
-body[data-env="desktop"] .menu-close { display: none; }
-
-/* меню */
-body[data-env="desktop"] .menu-header {
-  background: var(--gray-bg);
-  border-bottom: 1px solid #ddd;
-}
-body[data-env="desktop"] .menu-list a:hover,
-body[data-env="desktop"] .menu-list a.active {
-  background: #ececec;
-}
-/* DESKTOP — фикс верхнего меню */
 body[data-env="desktop"] header {
   position: fixed;
   top: 0;
@@ -47,7 +23,23 @@ body[data-env="desktop"] header {
   z-index: 8;
 }
 
-/* и компенсируем высоту, чтобы контент не ушёл под header */
 body[data-env="desktop"] main {
+  flex: 1;
+  margin-left: var(--menu-desktop);
   padding-top: 60px;
+  padding-bottom: 40px;
 }
+
+body[data-env="desktop"] footer {
+  margin-left: var(--menu-desktop);
+  margin-top: auto;
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: calc(100% - var(--menu-desktop));
+  border-top: 1px solid #ccc;
+  background: #fff;
+}
+
+body[data-env="desktop"] #menu-toggle { display: none; }
+body[data-env="desktop"] .menu-close { display: none; }
