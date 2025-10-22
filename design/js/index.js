@@ -1,17 +1,15 @@
-// ======== Smart Vision UI System (v2.5) ========
-// Кнопка состояния показывает весь STATE в мини-JSON виде
-// На десктопе меню открыто по умолчанию (400px фиксировано)
+// ======== Smart Vision UI System (v2.6) ========
+// Автоподключение CSS по STATE.env (base + mobile/desktop)
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
 
 console.log(`🌍 Smart Vision (${CONFIG.PROJECT_NAME}) v${CONFIG.VERSION}`);
 
-// ======== GLOBAL STATE ========
 const STATE = {
-  env: null,               // mobile / desktop
-  user: null,              // null = гость
-  page: "home",            // текущая страница
+  env: null,
+  user: null,
+  page: "home",
   uiFlags: {
     menuOpen: false,
     debugVisible: false
@@ -29,11 +27,13 @@ const root = {
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
   applyEnv();
+  loadCSS("base");                // общий стиль всегда
+  loadCSS(STATE.env);             // мобильный или десктоп
   renderApp();
   attachGlobalEvents();
   updateEnvButton();
 });
-window.addEventListener("resize", applyEnv);
+window.addEventListener("resize", onResize);
 window.addEventListener("hashchange", setPageFromHash);
 
 // ========== ENV DETECT ==========
@@ -46,19 +46,41 @@ function applyEnv() {
   if (STATE.env !== env) {
     STATE.env = env;
     document.body.dataset.env = env;
-    document.body.classList.remove("menu-open");
-    STATE.uiFlags.menuOpen = false;
+    document.body.classList.toggle("menu-open", env === "desktop");
+    STATE.uiFlags.menuOpen = env === "desktop";
     updateEnvButton();
-  }
-
-  // 💡 Автоматически открываем меню при desktop
-  if (STATE.env === "desktop") {
-    document.body.classList.add("menu-open");
-    STATE.uiFlags.menuOpen = true;
   }
 }
 
-// ========== CORE RENDER ==========
+// при ресайзе пересоздаём CSS-линк если изменилась среда
+function onResize() {
+  const oldEnv = STATE.env;
+  applyEnv();
+  if (STATE.env !== oldEnv) {
+    removeOldEnvCSS();
+    loadCSS(STATE.env);
+  }
+}
+
+// ========== CSS LOADER ==========
+function loadCSS(name) {
+  const id = `css-${name}`;
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.id = id;
+  link.rel = "stylesheet";
+  link.href = `/css/${name}.css`;
+  document.head.appendChild(link);
+}
+
+function removeOldEnvCSS() {
+  ["css-mobile", "css-desktop"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+}
+
+// ========== RENDER ==========
 function renderApp() {
   renderHeader();
   renderMenuBlock();
@@ -66,7 +88,6 @@ function renderApp() {
   renderFooter();
 }
 
-// ========== HEADER ==========
 function renderHeader() {
   const userLabel = STATE.user ? STATE.user.name : "Гость";
   root.header.innerHTML = `
@@ -77,7 +98,6 @@ function renderHeader() {
   document.getElementById("menu-toggle").onclick = toggleMenu;
 }
 
-// ========== MENU ==========
 function renderMenuBlock() {
   root.menu.innerHTML = renderMenu(STATE.page, STATE.user);
   const closeBtn = document.getElementById("menu-close");
@@ -88,26 +108,17 @@ function renderMenuBlock() {
   };
 }
 
-// ========== MAIN ==========
 function renderMain() {
   const content = {
-    home: `
-      <section class="main-block">
-        <h2>Главная страница</h2>
-        <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p>
-      </section>`,
-    policy: `<h2>Политика конфиденциальности</h2><p>Текст политики...</p>`,
-    terms: `<h2>Условия использования</h2><p>Текст условий...</p>`,
-    about: `<h2>О нас</h2><p>Smart Vision — проект ясности, фокуса и интеллекта как формы присутствия.</p>`,
-    contacts: `<h2>Контакты</h2><p>Связаться: info@smartvision.life</p>`,
-    dashboard: renderDashboard(),
+    home: `<section class="main-block"><h2>Главная страница</h2>
+      <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p></section>`,
+    about: `<h2>О нас</h2><p>Smart Vision — интеллект как форма присутствия.</p>`,
     notfound: `<h2>Страница не найдена</h2>`
   };
   root.main.innerHTML = content[STATE.page] || content.notfound;
   updateEnvButton();
 }
 
-// ========== FOOTER ==========
 function renderFooter() {
   root.footer.innerHTML = `
     <a href="#policy">Политика конфиденциальности</a><br>
@@ -120,15 +131,28 @@ function renderFooter() {
   updateEnvButton();
 }
 
-// ========== DASHBOARD ==========
-function renderDashboard() {
-  if (!STATE.user) {
-    return `<h2>Личный кабинет</h2><p>Пожалуйста, <a href="#login">войдите</a> в систему.</p>`;
-  }
-  return `<h2>Здравствуйте, ${STATE.user.name}</h2><p>Это ваш личный кабинет Smart Vision.</p>`;
+// ========== STATE BUTTON ==========
+function formatState() {
+  const { env, user, page, uiFlags } = STATE;
+  return `{ env:${env}, user:${user ? user.name : "guest"}, page:${page}, menu:${uiFlags.menuOpen}, debug:${uiFlags.debugVisible} }`;
 }
 
-// ========== PAGE / MENU ==========
+function updateEnvButton() {
+  const btn = document.getElementById("env-btn");
+  if (btn) {
+    btn.textContent = formatState();
+  }
+}
+
+// ========== GLOBAL EVENTS ==========
+function attachGlobalEvents() {
+  root.overlay.onclick = () => {
+    STATE.uiFlags.menuOpen = false;
+    document.body.classList.remove("menu-open");
+    updateEnvButton();
+  };
+}
+
 function toggleMenu() {
   STATE.uiFlags.menuOpen = !STATE.uiFlags.menuOpen;
   document.body.classList.toggle("menu-open", STATE.uiFlags.menuOpen);
@@ -141,32 +165,4 @@ function setPageFromHash() {
     STATE.page = hash;
     renderApp();
   }
-}
-
-// ========== STATE BUTTON ==========
-function formatState() {
-  const env = STATE.env || "none";
-  const user = STATE.user ? STATE.user.name : "guest";
-  const page = STATE.page || "unknown";
-  const menu = STATE.uiFlags.menuOpen ? "open" : "closed";
-  const debug = STATE.uiFlags.debugVisible ? "on" : "off";
-  const anomaly = !STATE.env ? "⚠️" : "";
-  return `${anomaly}{ env:${env}, user:${user}, page:${page}, menu:${menu}, debug:${debug} }`;
-}
-
-function updateEnvButton() {
-  const btn = document.getElementById("env-btn");
-  if (btn) {
-    btn.textContent = formatState();
-    btn.title = JSON.stringify(STATE, null, 2);
-  }
-}
-
-// ========== GLOBAL EVENTS ==========
-function attachGlobalEvents() {
-  root.overlay.onclick = () => {
-    STATE.uiFlags.menuOpen = false;
-    document.body.classList.remove("menu-open");
-    updateEnvButton();
-  };
 }
