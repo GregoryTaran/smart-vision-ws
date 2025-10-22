@@ -1,14 +1,12 @@
+#overlay { display: none; }
+
 #side-menu {
-  position: fixed;
-  top: 0; left: 0;
   width: 400px;
-  height: 100vh;
-  background: #fff;
-  box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+  transform: none !important;
+  left: 0;
 }
+
 #page-wrapper {
   margin-left: 400px;
   width: calc(100% - 400px);
-  transition: margin-left 0.3s ease;
 }
-#overlay { display: none; }
