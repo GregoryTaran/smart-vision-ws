@@ -33,8 +33,6 @@ body.menu-open #overlay {
 #side-menu {
   position: fixed;
   top: 0; left: 0;
-  width: 80%;
-  max-width: 400px;
   height: 100%;
   background: #fff;
   box-shadow: 3px 0 10px rgba(0,0,0,0.2);
@@ -44,25 +42,24 @@ body.menu-open #overlay {
   display: flex;
   flex-direction: column;
 }
-body.menu-open #side-menu { transform: translateX(0); }
 
-/* ПК — страница сужается, мобила — двигается */
-@media (min-width: 769px) {
-  #overlay {
-    display: none;
-  }
-
-  body.menu-open #page-wrapper {
-    transform: none !important;   /* отменяем сдвиг */
-    margin-left: 400px;           /* меню “вдавливает” страницу */
-    width: calc(100% - 400px);    /* сжимает контент */
-  }
-}
-
+/* 📱 Телефон */
 @media (max-width: 768px) {
+  #side-menu { width: 80%; } /* 80% от экрана */
   body.menu-open #page-wrapper {
     transform: translateX(80%);
     background: var(--mobile-right);
+  }
+}
+
+/* 💻 Компьютер */
+@media (min-width: 769px) {
+  #side-menu { width: 400px; } /* фикс 400px */
+  #overlay { display: none; }
+  body.menu-open #page-wrapper {
+    transform: none !important;
+    margin-left: 400px;
+    width: calc(100% - 400px);
   }
 }
 
