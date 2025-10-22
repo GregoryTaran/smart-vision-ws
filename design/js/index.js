@@ -53,3 +53,22 @@ function updateEnvButton() {
 envBtn.addEventListener("click", updateEnvButton);
 window.addEventListener("resize", applyEnv);
 window.addEventListener("DOMContentLoaded", applyEnv);
+
+// === MOBILE MENU FIX: стрелка + свайп ===
+const menuCloseBtn = document.getElementById("menu-close");
+const menu = document.getElementById("side-menu");
+
+// закрытие меню по стрелке
+if (menuCloseBtn) {
+  menuCloseBtn.addEventListener("click", () => {
+    document.body.classList.remove("menu-open");
+  });
+}
+
+// свайп влево для закрытия
+let startX = 0;
+menu.addEventListener("touchstart", e => (startX = e.touches[0].clientX), { passive: true });
+menu.addEventListener("touchend", e => {
+  const endX = e.changedTouches[0].clientX;
+  if (startX - endX > 50) document.body.classList.remove("menu-open");
+}, { passive: true });
