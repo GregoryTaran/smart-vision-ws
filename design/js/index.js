@@ -1,13 +1,14 @@
-// ======== Smart Vision UI System (v3.5 stable env-style) ========
-// Логика STATE, ENV и подгрузка нужного CSS при старте.
+// ======== Smart Vision UI System (v3.6 clean env) ========
+// Работает в связке с index.html, где среда определяется ДО загрузки этого скрипта.
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
 
 console.log(`🌍 Smart Vision (${CONFIG.PROJECT_NAME}) v${CONFIG.VERSION}`);
 
+// ---------- STATE ----------
 const STATE = {
-  env: null,
+  env: window.SMART_ENV || "desktop", // ← среда уже определена в index.html
   user: null,
   page: "home",
   uiFlags: {
@@ -16,6 +17,7 @@ const STATE = {
   }
 };
 
+// ---------- ROOT ----------
 const root = {
   header: document.querySelector("header"),
   menu: document.getElementById("side-menu"),
@@ -26,52 +28,23 @@ const root = {
 
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
-  detectAndLoadEnvCSS();   // ← выбор и загрузка стиля (без дублирования)
+  setupInitialState();
   renderApp();
   attachGlobalEvents();
   initSwipe();
-  updateEnvButton();
-  console.log(`✅ Environment: ${STATE.env}`);
+  console.log(`✅ Environment detected: ${STATE.env}`);
 });
 
-window.addEventListener("resize", applyEnv);
-window.addEventListener("hashchange", setPageFromHash);
-
-// ========== ENV DETECT + LOAD ==========
-function detectEnv() {
-  return window.innerWidth <= 768 ? "mobile" : "desktop";
-}
-
-function detectAndLoadEnvCSS() {
-  // Берём ранне-определённый env (из index.html); fallback — локальное определение.
-  const env = window.SMART_ENV || detectEnv();
-  STATE.env = env;
-  document.body.dataset.env = env;
-
-  // Меню: открыто только на десктопе при старте
-  if (env === "desktop") {
+// ---------- INITIAL SETUP ----------
+function setupInitialState() {
+  document.body.dataset.env = STATE.env;
+  // На десктопе меню открыто по умолчанию
+  if (STATE.env === "desktop") {
     document.body.classList.add("menu-open");
     STATE.uiFlags.menuOpen = true;
   } else {
     document.body.classList.remove("menu-open");
     STATE.uiFlags.menuOpen = false;
-  }
-
-  // Если нужный env-стиль ещё не подключён (на случай чистого HTML без скрипта в <head>), подключим его здесь.
-  if (!document.getElementById("env-style")) {
-    const cssFile = `css/${env}.css`;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = cssFile;
-    link.id = "env-style";
-    document.head.appendChild(link);
-  }
-}
-
-function applyEnv() {
-  const env = detectEnv();
-  if (STATE.env !== env) {
-    console.log("🔄 Среда изменилась. Для корректного отображения обновите страницу (F5).");
   }
 }
 
@@ -81,6 +54,7 @@ function renderApp() {
   renderMenuBlock();
   renderMain();
   renderFooter();
+  updateEnvButton();
 }
 
 // ---------- HEADER ----------
@@ -98,11 +72,13 @@ function renderHeader() {
 function renderMenuBlock() {
   root.menu.innerHTML = renderMenu(STATE.page, STATE.user);
   const closeBtn = document.getElementById("menu-close");
-  if (closeBtn) closeBtn.onclick = () => {
-    document.body.classList.remove("menu-open");
-    STATE.uiFlags.menuOpen = false;
-    updateEnvButton();
-  };
+  if (closeBtn) closeBtn.onclick = closeMenu;
+}
+
+function closeMenu() {
+  document.body.classList.remove("menu-open");
+  STATE.uiFlags.menuOpen = false;
+  updateEnvButton();
 }
 
 // ---------- MAIN ----------
@@ -121,20 +97,12 @@ function renderMain() {
     policy: `
       <section class="main-block">
         <h2>Политика конфиденциальности</h2>
-        <p>Smart Vision уважает вашу конфиденциальность и обрабатывает данные ответственно.</p>
+        <p>Smart Vision ценит вашу конфиденциальность и стремится защищать любые данные, которые вы передаёте при использовании нашего сайта. Мы обрабатываем персональные данные в строгом соответствии с действующим законодательством и лучшими практиками безопасности.</p>
       </section>`,
     terms: `
       <section class="main-block">
         <h2>Условия использования</h2>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз...</p>
       </section>`,
     contacts: `
       <section class="main-block">
@@ -150,7 +118,6 @@ function renderMain() {
   };
 
   root.main.innerHTML = content[STATE.page] || content.notfound;
-  updateEnvButton();
 }
 
 // ---------- FOOTER ----------
@@ -163,7 +130,6 @@ function renderFooter() {
       <button id="env-btn" class="env-btn">${formatState()}</button>
     </div>
   `;
-  updateEnvButton();
 }
 
 // ---------- STATE BUTTON ----------
@@ -179,11 +145,8 @@ function updateEnvButton() {
 
 // ---------- EVENTS ----------
 function attachGlobalEvents() {
-  root.overlay.onclick = () => {
-    STATE.uiFlags.menuOpen = false;
-    document.body.classList.remove("menu-open");
-    updateEnvButton();
-  };
+  root.overlay.onclick = closeMenu;
+  window.addEventListener("hashchange", setPageFromHash);
 }
 
 function toggleMenu() {
@@ -200,11 +163,7 @@ function setPageFromHash() {
     renderApp();
   }
 
-  if (STATE.env === "mobile") {
-    document.body.classList.remove("menu-open");
-    STATE.uiFlags.menuOpen = false;
-    updateEnvButton();
-  }
+  if (STATE.env === "mobile") closeMenu();
 }
 
 // ---------- SWIPE GESTURES ----------
@@ -214,19 +173,15 @@ let touchEndX = 0;
 function initSwipe() {
   window.addEventListener("touchstart", e => {
     touchStartX = e.changedTouches[0].screenX;
-  }, false);
+  });
 
   window.addEventListener("touchend", e => {
     touchEndX = e.changedTouches[0].screenX;
     handleSwipeGesture();
-  }, false);
+  });
 }
 
 function handleSwipeGesture() {
   const diff = touchEndX - touchStartX;
-  if (STATE.env === "mobile" && STATE.uiFlags.menuOpen && diff < -70) {
-    document.body.classList.remove("menu-open");
-    STATE.uiFlags.menuOpen = false;
-    updateEnvButton();
-  }
+  if (STATE.env === "mobile" && STATE.uiFlags.menuOpen && diff < -70) closeMenu();
 }
