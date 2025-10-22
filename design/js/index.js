@@ -1,5 +1,6 @@
-// ======== Smart Vision UI System (v2.4) ========
-// Кнопка состояния теперь "живая": отображает весь STATE в мини-JSON виде
+// ======== Smart Vision UI System (v2.5) ========
+// Кнопка состояния показывает весь STATE в мини-JSON виде
+// На десктопе меню открыто по умолчанию (400px фиксировано)
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -7,15 +8,11 @@ import { renderMenu } from "./menu1.js";
 console.log(`🌍 Smart Vision (${CONFIG.PROJECT_NAME}) v${CONFIG.VERSION}`);
 
 // ======== GLOBAL STATE ========
-// 0. env     → где открыта страница (mobile / desktop)
-// 1. user    → кто работает (гость / пользователь)
-// 2. page    → какая страница отображается
-// 3. uiFlags → состояния интерфейса (меню, debug и т.д.)
 const STATE = {
-  env: null,               // 0
-  user: null,              // 1 (null = гость)
-  page: "home",            // 2
-  uiFlags: {               // 3
+  env: null,               // mobile / desktop
+  user: null,              // null = гость
+  page: "home",            // текущая страница
+  uiFlags: {
     menuOpen: false,
     debugVisible: false
   }
@@ -43,13 +40,21 @@ window.addEventListener("hashchange", setPageFromHash);
 function detectEnv() {
   return window.innerWidth <= 768 ? "mobile" : "desktop";
 }
+
 function applyEnv() {
   const env = detectEnv();
   if (STATE.env !== env) {
     STATE.env = env;
     document.body.dataset.env = env;
     document.body.classList.remove("menu-open");
+    STATE.uiFlags.menuOpen = false;
     updateEnvButton();
+  }
+
+  // 💡 Автоматически открываем меню при desktop
+  if (STATE.env === "desktop") {
+    document.body.classList.add("menu-open");
+    STATE.uiFlags.menuOpen = true;
   }
 }
 
@@ -129,6 +134,7 @@ function toggleMenu() {
   document.body.classList.toggle("menu-open", STATE.uiFlags.menuOpen);
   updateEnvButton();
 }
+
 function setPageFromHash() {
   const hash = window.location.hash.replace("#", "") || "home";
   if (hash !== STATE.page) {
@@ -144,10 +150,7 @@ function formatState() {
   const page = STATE.page || "unknown";
   const menu = STATE.uiFlags.menuOpen ? "open" : "closed";
   const debug = STATE.uiFlags.debugVisible ? "on" : "off";
-
-  // если что-то не определено — подсвечиваем ⚠️
   const anomaly = !STATE.env ? "⚠️" : "";
-
   return `${anomaly}{ env:${env}, user:${user}, page:${page}, menu:${menu}, debug:${debug} }`;
 }
 
@@ -155,7 +158,7 @@ function updateEnvButton() {
   const btn = document.getElementById("env-btn");
   if (btn) {
     btn.textContent = formatState();
-    btn.title = JSON.stringify(STATE, null, 2); // tooltip с полным STATE
+    btn.title = JSON.stringify(STATE, null, 2);
   }
 }
 
