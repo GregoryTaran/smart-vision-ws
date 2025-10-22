@@ -55,3 +55,27 @@ function initDesktop() {
 
 window.addEventListener("resize", applyEnv);
 window.addEventListener("DOMContentLoaded", applyEnv);
+// === DEBUG STATE INDICATOR ===
+const stateIndicator = document.createElement("div");
+stateIndicator.id = "env-indicator";
+stateIndicator.style.position = "fixed";
+stateIndicator.style.bottom = "10px";
+stateIndicator.style.right = "10px";
+stateIndicator.style.padding = "8px 12px";
+stateIndicator.style.background = "rgba(0,0,0,0.7)";
+stateIndicator.style.color = "#fff";
+stateIndicator.style.borderRadius = "8px";
+stateIndicator.style.fontSize = "14px";
+stateIndicator.style.fontFamily = "monospace";
+stateIndicator.style.zIndex = "9999";
+document.body.appendChild(stateIndicator);
+
+function updateIndicator() {
+  const env = window.innerWidth <= 768 ? "mobile" : "desktop";
+  stateIndicator.textContent =
+    env === "mobile"
+      ? "📱 СОСТОЯНИЕ МОБИЛЬНОЙ СТРАНИЦЫ"
+      : "💻 СОСТОЯНИЕ ПК";
+}
+window.addEventListener("resize", updateIndicator);
+window.addEventListener("DOMContentLoaded", updateIndicator);
