@@ -1,5 +1,5 @@
-// ======== Smart Vision UI System (v3.6 clean env) ========
-// Работает в связке с index.html, где среда определяется ДО загрузки этого скрипта.
+// ======== Smart Vision UI System (v3.7 sync) ========
+// Среда определяется в index.html — здесь только логика и динамическая отрисовка.
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -8,7 +8,7 @@ console.log(`🌍 Smart Vision (${CONFIG.PROJECT_NAME}) v${CONFIG.VERSION}`);
 
 // ---------- STATE ----------
 const STATE = {
-  env: window.SMART_ENV || "desktop", // ← среда уже определена в index.html
+  env: window.SMART_ENV || "desktop",
   user: null,
   page: "home",
   uiFlags: {
@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // ---------- INITIAL SETUP ----------
 function setupInitialState() {
   document.body.dataset.env = STATE.env;
-  // На десктопе меню открыто по умолчанию
+
   if (STATE.env === "desktop") {
     document.body.classList.add("menu-open");
     STATE.uiFlags.menuOpen = true;
@@ -48,7 +48,7 @@ function setupInitialState() {
   }
 }
 
-// ========== RENDER ==========
+// ========== RENDER APP ==========
 function renderApp() {
   renderHeader();
   renderMenuBlock();
@@ -62,7 +62,9 @@ function renderHeader() {
   const userLabel = STATE.user ? STATE.user.name : "Гость";
   root.header.innerHTML = `
     <button id="menu-toggle" aria-label="Открыть меню">☰</button>
-    <div id="logo-wrap"><img src="assets/logo400.jpg" alt="Smart Vision" id="logo"></div>
+    <div id="logo-wrap">
+      <img src="assets/logo_${STATE.env}.png" alt="Smart Vision" id="logo">
+    </div>
     <div class="user-label">${userLabel}</div>
   `;
   document.getElementById("menu-toggle").onclick = toggleMenu;
@@ -75,12 +77,6 @@ function renderMenuBlock() {
   if (closeBtn) closeBtn.onclick = closeMenu;
 }
 
-function closeMenu() {
-  document.body.classList.remove("menu-open");
-  STATE.uiFlags.menuOpen = false;
-  updateEnvButton();
-}
-
 // ---------- MAIN ----------
 function renderMain() {
   const content = {
@@ -91,30 +87,24 @@ function renderMain() {
       </section>`,
     about: `
       <section class="main-block">
-        <h2>О нас</h2>
-        <p>Smart Vision — проект ясности, фокуса и интеллекта как формы присутствия.</p>
+        <h2>О проекте</h2>
+        <p>Smart Vision — это архитектура присутствия, фокуса и интеллекта. Здесь каждый элемент интерфейса живой и динамичный.</p>
       </section>`,
     policy: `
       <section class="main-block">
         <h2>Политика конфиденциальности</h2>
-        <p>Smart Vision ценит вашу конфиденциальность и стремится защищать любые данные, которые вы передаёте при использовании нашего сайта. Мы обрабатываем персональные данные в строгом соответствии с действующим законодательством и лучшими практиками безопасности.</p>
+        <p>Smart Vision ценит вашу конфиденциальность и соблюдает законы обработки данных. Мы защищаем всё, что передаётся пользователем.</p>
       </section>`,
     terms: `
       <section class="main-block">
         <h2>Условия использования</h2>
-        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз...</p>
+        <p>Используя Smart Vision, вы соглашаетесь с принципами ясности, фокуса, интеллекта и свободы.</p>
       </section>`,
-    contacts: `
+    notfound: `
       <section class="main-block">
-        <h2>Контакты</h2>
-        <p>Связаться: <a href="mailto:info@smartvision.life">info@smartvision.life</a></p>
-      </section>`,
-    dashboard: `
-      <section class="main-block">
-        <h2>Личный кабинет</h2>
-        <p>Добро пожаловать в ваш Smart Vision Dashboard.</p>
-      </section>`,
-    notfound: `<section class="main-block"><h2>Страница не найдена</h2></section>`
+        <h2>Страница не найдена</h2>
+        <p>Похоже, вы перешли по несуществующему адресу.</p>
+      </section>`
   };
 
   root.main.innerHTML = content[STATE.page] || content.notfound;
@@ -123,9 +113,9 @@ function renderMain() {
 // ---------- FOOTER ----------
 function renderFooter() {
   root.footer.innerHTML = `
-    <a href="#policy">Политика конфиденциальности</a><br>
-    <a href="#terms">Условия использования</a><br>
-    <small>© 2025 Smart Vision</small>
+    <a href="#policy">Политика</a> |
+    <a href="#terms">Условия</a>
+    <br><small>© 2025 Smart Vision</small>
     <div style="margin-top:10px;">
       <button id="env-btn" class="env-btn">${formatState()}</button>
     </div>
@@ -135,7 +125,7 @@ function renderFooter() {
 // ---------- STATE BUTTON ----------
 function formatState() {
   const { env, user, page, uiFlags } = STATE;
-  return `{ env:${env}, user:${user ? user.name : "guest"}, page:${page}, menu:${uiFlags.menuOpen}, debug:${uiFlags.debugVisible} }`;
+  return `{ env:${env}, user:${user ? user.name : "guest"}, page:${page}, menu:${uiFlags.menuOpen} }`;
 }
 
 function updateEnvButton() {
@@ -155,6 +145,12 @@ function toggleMenu() {
   updateEnvButton();
 }
 
+function closeMenu() {
+  document.body.classList.remove("menu-open");
+  STATE.uiFlags.menuOpen = false;
+  updateEnvButton();
+}
+
 // ---------- HASHCHANGE ----------
 function setPageFromHash() {
   const hash = window.location.hash.replace("#", "") || "home";
@@ -162,15 +158,16 @@ function setPageFromHash() {
     STATE.page = hash;
     renderApp();
   }
-
   if (STATE.env === "mobile") closeMenu();
 }
 
-// ---------- SWIPE GESTURES ----------
+// ---------- SWIPE ----------
 let touchStartX = 0;
 let touchEndX = 0;
 
 function initSwipe() {
+  if (STATE.env !== "mobile") return;
+
   window.addEventListener("touchstart", e => {
     touchStartX = e.changedTouches[0].screenX;
   });
@@ -183,5 +180,6 @@ function initSwipe() {
 
 function handleSwipeGesture() {
   const diff = touchEndX - touchStartX;
-  if (STATE.env === "mobile" && STATE.uiFlags.menuOpen && diff < -70) closeMenu();
+  if (diff > 80) toggleMenu(true);
+  if (diff < -80) closeMenu();
 }
