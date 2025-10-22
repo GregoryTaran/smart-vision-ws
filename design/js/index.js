@@ -1,4 +1,4 @@
-// ======== Smart Vision UI System (v2) ========
+// ======== Smart Vision UI System (v2.1) ========
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -25,6 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
   applyEnv();
   renderApp();
   attachGlobalEvents();
+  updateEnvButton(); // первичная инициализация текста кнопки
 });
 window.addEventListener("resize", applyEnv);
 window.addEventListener("hashchange", setPageFromHash);
@@ -39,6 +40,7 @@ function applyEnv() {
     STATE.env = env;
     document.body.dataset.env = env;
     document.body.classList.remove("menu-open");
+    updateEnvButton(); // обновить текст кнопки
   }
 }
 
@@ -73,7 +75,6 @@ function renderMain() {
   const content = {
     home: `
       <section class="main-block">
-        <button id="env-btn" class="env-btn">${envLabel()}</button>
         <h2>Главная страница</h2>
         <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p>
       </section>`,
@@ -85,6 +86,7 @@ function renderMain() {
     notfound: `<h2>Страница не найдена</h2>`
   };
   root.main.innerHTML = content[STATE.page] || content.notfound;
+  updateEnvButton(); // обновить после смены страницы
 }
 
 // ========== FOOTER ==========
@@ -93,7 +95,11 @@ function renderFooter() {
     <a href="#policy">Политика конфиденциальности</a><br>
     <a href="#terms">Условия использования</a><br>
     <small>© 2025 Smart Vision</small>
+    <div style="margin-top:10px;">
+      <button id="env-btn" class="env-btn">${envLabel()}</button>
+    </div>
   `;
+  updateEnvButton();
 }
 
 // ========== DASHBOARD ==========
@@ -117,9 +123,13 @@ function setPageFromHash() {
   }
 }
 
-// ========== UTILS ==========
+// ========== ENV BUTTON ==========
 function envLabel() {
-  return STATE.env === "mobile" ? "📱 Мобильная версия" : "💻 ПК версия";
+  return STATE.env === "mobile" ? "📱 Мобильная" : "💻 ПК";
+}
+function updateEnvButton() {
+  const btn = document.getElementById("env-btn");
+  if (btn) btn.textContent = envLabel();
 }
 
 // ========== GLOBAL EVENTS ==========
