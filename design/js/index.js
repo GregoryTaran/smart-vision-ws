@@ -1,4 +1,4 @@
-// ======== Smart Vision index.js v3.11 (restore renderMain + DOM fix) ========
+// ======== Smart Vision index.js v3.9 (menu closed by default) ========
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -14,7 +14,6 @@ const STATE = {
 
 const root = {};
 
-// DOM READY гарант
 if (document.readyState === "loading") {
   window.addEventListener("DOMContentLoaded", init);
 } else {
@@ -22,7 +21,6 @@ if (document.readyState === "loading") {
 }
 
 function init() {
-  // получаем элементы только когда DOM готов
   root.header = document.querySelector("header");
   root.menu = document.getElementById("side-menu");
   root.main = document.getElementById("content");
@@ -30,14 +28,25 @@ function init() {
   root.overlay = document.getElementById("overlay");
 
   document.body.dataset.env = STATE.env;
-  document.body.classList.toggle("menu-open", STATE.env === "desktop");
-  STATE.uiFlags.menuOpen = STATE.env === "desktop";
+
+  // 🔹 Меню по умолчанию закрыто
+  document.body.classList.remove("menu-open");
+  STATE.uiFlags.menuOpen = false;
+
+  // 🔹 Если desktop — открываем без анимации
+  if (STATE.env === "desktop") {
+    root.menu.style.transition = "none";
+    document.body.classList.add("menu-open");
+    STATE.uiFlags.menuOpen = true;
+    setTimeout(() => (root.menu.style.transition = ""), 100); // возвращаем плавность
+  }
 
   renderApp();
   attachGlobalEvents();
   initSwipe();
   updateEnvButton();
 
+  document.body.classList.remove("preload");
   console.log(`✅ Smart Vision initialized (${STATE.env})`);
 }
 
@@ -165,15 +174,13 @@ let touchEndX = 0;
 
 function initSwipe() {
   if (STATE.env !== "mobile") return;
-
   window.addEventListener("touchstart", e => {
     touchStartX = e.changedTouches[0].screenX;
-  }, false);
-
+  });
   window.addEventListener("touchend", e => {
     touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
-  }, false);
+  });
 }
 
 function handleSwipe() {

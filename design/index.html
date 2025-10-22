@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Vision Design v3.8</title>
+  <title>Smart Vision Design v3.9</title>
 
-  <!-- 1️⃣ Базовые стили без анимаций -->
+  <!-- 1️⃣ Базовые стили -->
   <link rel="stylesheet" href="css/base.css" />
 
-  <!-- 2️⃣ Контролируемый загрузчик среды -->
+  <!-- 2️⃣ Загрузчик среды -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("🧠 Smart Vision: DOM готов, инициализация среды...");
+      console.log("🧠 Smart Vision: DOM готов.");
 
-      // Определяем тип устройства
       const env = window.innerWidth <= 768 ? "mobile" : "desktop";
       document.body.dataset.env = env;
       window.SMART_ENV = env;
@@ -22,25 +21,21 @@
       const envStyle = document.createElement("link");
       envStyle.rel = "stylesheet";
       envStyle.href = `css/${env}.css`;
-
-      // Когда стиль загружен — подключаем JS
       envStyle.onload = () => {
-        console.log(`🎨 Загрузился стиль: ${env}.css`);
+        console.log(`🎨 Стиль ${env}.css загружен`);
 
+        // Подключаем основной JS после стилей
         const app = document.createElement("script");
         app.type = "module";
         app.src = "js/index.js";
         document.head.appendChild(app);
-
-        console.log("⚙️ Smart Vision JS загружен после стилей");
       };
-
       document.head.appendChild(envStyle);
     });
   </script>
 </head>
 
-<body>
+<body class="preload">
   <header></header>
   <nav id="side-menu"></nav>
   <main id="content"></main>
