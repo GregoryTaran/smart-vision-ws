@@ -7,6 +7,7 @@ const menu = document.getElementById("side-menu");
 const overlay = document.getElementById("overlay");
 const toggle = document.getElementById("menu-toggle");
 const page = document.getElementById("page-wrapper");
+const main = document.getElementById("content");
 
 // вставляем меню и футер
 menu.innerHTML = renderMenu();
@@ -43,19 +44,11 @@ function initMobile() {
   overlay.onclick = () => document.body.classList.remove("menu-open");
 
   // свайп для закрытия меню
-  menu.addEventListener(
-    "touchstart",
-    (e) => (startX = e.touches[0].clientX),
-    { passive: true }
-  );
-  menu.addEventListener(
-    "touchend",
-    (e) => {
-      endX = e.changedTouches[0].clientX;
-      if (startX - endX > 50) document.body.classList.remove("menu-open");
-    },
-    { passive: true }
-  );
+  menu.addEventListener("touchstart", e => (startX = e.touches[0].clientX), { passive: true });
+  menu.addEventListener("touchend", e => {
+    endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) document.body.classList.remove("menu-open");
+  }, { passive: true });
 }
 
 function initDesktop() {
@@ -66,10 +59,10 @@ function initDesktop() {
 window.addEventListener("resize", applyEnv);
 window.addEventListener("DOMContentLoaded", applyEnv);
 
-// === DEBUG STATE INDICATOR (центр экрана) ===
+// === DEBUG STATE INDICATOR (в центре основного блока) ===
 const stateIndicator = document.createElement("div");
 stateIndicator.id = "env-indicator";
-stateIndicator.style.position = "fixed";
+stateIndicator.style.position = "absolute";
 stateIndicator.style.top = "50%";
 stateIndicator.style.left = "50%";
 stateIndicator.style.transform = "translate(-50%, -50%)";
@@ -83,12 +76,12 @@ stateIndicator.style.fontFamily = "sans-serif";
 stateIndicator.style.textAlign = "center";
 stateIndicator.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)";
 stateIndicator.style.transition = "opacity 0.4s ease";
-stateIndicator.style.zIndex = "9999";
-document.body.appendChild(stateIndicator);
+stateIndicator.style.zIndex = "9";
+main.style.position = "relative";
+main.appendChild(stateIndicator);
 
 function updateIndicator(env) {
-  const current =
-    env || (window.innerWidth <= 768 ? "mobile" : "desktop");
+  const current = env || getEnv();
   stateIndicator.textContent =
     current === "mobile"
       ? "📱 СОСТОЯНИЕ МОБИЛЬНОЙ СТРАНИЦЫ"
