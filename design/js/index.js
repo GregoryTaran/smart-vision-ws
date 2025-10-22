@@ -1,15 +1,24 @@
-// ======== Smart Vision UI System (v2.1) ========
+// ======== Smart Vision UI System (v2.4) ========
+// Кнопка состояния теперь "живая": отображает весь STATE в мини-JSON виде
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
 
 console.log(`🌍 Smart Vision (${CONFIG.PROJECT_NAME}) v${CONFIG.VERSION}`);
 
+// ======== GLOBAL STATE ========
+// 0. env     → где открыта страница (mobile / desktop)
+// 1. user    → кто работает (гость / пользователь)
+// 2. page    → какая страница отображается
+// 3. uiFlags → состояния интерфейса (меню, debug и т.д.)
 const STATE = {
-  env: null,
-  page: "home",
-  user: null,
-  menuOpen: false
+  env: null,               // 0
+  user: null,              // 1 (null = гость)
+  page: "home",            // 2
+  uiFlags: {               // 3
+    menuOpen: false,
+    debugVisible: false
+  }
 };
 
 const root = {
@@ -25,7 +34,7 @@ window.addEventListener("DOMContentLoaded", () => {
   applyEnv();
   renderApp();
   attachGlobalEvents();
-  updateEnvButton(); // первичная инициализация текста кнопки
+  updateEnvButton();
 });
 window.addEventListener("resize", applyEnv);
 window.addEventListener("hashchange", setPageFromHash);
@@ -40,7 +49,7 @@ function applyEnv() {
     STATE.env = env;
     document.body.dataset.env = env;
     document.body.classList.remove("menu-open");
-    updateEnvButton(); // обновить текст кнопки
+    updateEnvButton();
   }
 }
 
@@ -67,7 +76,11 @@ function renderHeader() {
 function renderMenuBlock() {
   root.menu.innerHTML = renderMenu(STATE.page, STATE.user);
   const closeBtn = document.getElementById("menu-close");
-  if (closeBtn) closeBtn.onclick = () => (document.body.classList.remove("menu-open"), STATE.menuOpen = false);
+  if (closeBtn) closeBtn.onclick = () => {
+    document.body.classList.remove("menu-open");
+    STATE.uiFlags.menuOpen = false;
+    updateEnvButton();
+  };
 }
 
 // ========== MAIN ==========
@@ -86,7 +99,7 @@ function renderMain() {
     notfound: `<h2>Страница не найдена</h2>`
   };
   root.main.innerHTML = content[STATE.page] || content.notfound;
-  updateEnvButton(); // обновить после смены страницы
+  updateEnvButton();
 }
 
 // ========== FOOTER ==========
@@ -96,7 +109,7 @@ function renderFooter() {
     <a href="#terms">Условия использования</a><br>
     <small>© 2025 Smart Vision</small>
     <div style="margin-top:10px;">
-      <button id="env-btn" class="env-btn">${envLabel()}</button>
+      <button id="env-btn" class="env-btn">${formatState()}</button>
     </div>
   `;
   updateEnvButton();
@@ -110,10 +123,11 @@ function renderDashboard() {
   return `<h2>Здравствуйте, ${STATE.user.name}</h2><p>Это ваш личный кабинет Smart Vision.</p>`;
 }
 
-// ========== MENU / PAGE ==========
+// ========== PAGE / MENU ==========
 function toggleMenu() {
-  STATE.menuOpen = !STATE.menuOpen;
-  document.body.classList.toggle("menu-open", STATE.menuOpen);
+  STATE.uiFlags.menuOpen = !STATE.uiFlags.menuOpen;
+  document.body.classList.toggle("menu-open", STATE.uiFlags.menuOpen);
+  updateEnvButton();
 }
 function setPageFromHash() {
   const hash = window.location.hash.replace("#", "") || "home";
@@ -123,19 +137,33 @@ function setPageFromHash() {
   }
 }
 
-// ========== ENV BUTTON ==========
-function envLabel() {
-  return STATE.env === "mobile" ? "📱 Мобильная" : "💻 ПК";
+// ========== STATE BUTTON ==========
+function formatState() {
+  const env = STATE.env || "none";
+  const user = STATE.user ? STATE.user.name : "guest";
+  const page = STATE.page || "unknown";
+  const menu = STATE.uiFlags.menuOpen ? "open" : "closed";
+  const debug = STATE.uiFlags.debugVisible ? "on" : "off";
+
+  // если что-то не определено — подсвечиваем ⚠️
+  const anomaly = !STATE.env ? "⚠️" : "";
+
+  return `${anomaly}{ env:${env}, user:${user}, page:${page}, menu:${menu}, debug:${debug} }`;
 }
+
 function updateEnvButton() {
   const btn = document.getElementById("env-btn");
-  if (btn) btn.textContent = envLabel();
+  if (btn) {
+    btn.textContent = formatState();
+    btn.title = JSON.stringify(STATE, null, 2); // tooltip с полным STATE
+  }
 }
 
 // ========== GLOBAL EVENTS ==========
 function attachGlobalEvents() {
   root.overlay.onclick = () => {
-    STATE.menuOpen = false;
+    STATE.uiFlags.menuOpen = false;
     document.body.classList.remove("menu-open");
+    updateEnvButton();
   };
 }
