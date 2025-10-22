@@ -32,6 +32,8 @@ function applyEnv() {
 
   if (env === "mobile") initMobile();
   else initDesktop();
+
+  updateIndicator(env);
 }
 
 function initMobile() {
@@ -41,11 +43,19 @@ function initMobile() {
   overlay.onclick = () => document.body.classList.remove("menu-open");
 
   // свайп для закрытия меню
-  menu.addEventListener("touchstart", e => (startX = e.touches[0].clientX), { passive: true });
-  menu.addEventListener("touchend", e => {
-    endX = e.changedTouches[0].clientX;
-    if (startX - endX > 50) document.body.classList.remove("menu-open");
-  }, { passive: true });
+  menu.addEventListener(
+    "touchstart",
+    (e) => (startX = e.touches[0].clientX),
+    { passive: true }
+  );
+  menu.addEventListener(
+    "touchend",
+    (e) => {
+      endX = e.changedTouches[0].clientX;
+      if (startX - endX > 50) document.body.classList.remove("menu-open");
+    },
+    { passive: true }
+  );
 }
 
 function initDesktop() {
@@ -55,27 +65,41 @@ function initDesktop() {
 
 window.addEventListener("resize", applyEnv);
 window.addEventListener("DOMContentLoaded", applyEnv);
-// === DEBUG STATE INDICATOR ===
+
+// === DEBUG STATE INDICATOR (центр экрана) ===
 const stateIndicator = document.createElement("div");
 stateIndicator.id = "env-indicator";
 stateIndicator.style.position = "fixed";
-stateIndicator.style.bottom = "10px";
-stateIndicator.style.right = "10px";
-stateIndicator.style.padding = "8px 12px";
-stateIndicator.style.background = "rgba(0,0,0,0.7)";
+stateIndicator.style.top = "50%";
+stateIndicator.style.left = "50%";
+stateIndicator.style.transform = "translate(-50%, -50%)";
+stateIndicator.style.padding = "20px 30px";
+stateIndicator.style.background = "rgba(0,0,0,0.8)";
 stateIndicator.style.color = "#fff";
-stateIndicator.style.borderRadius = "8px";
-stateIndicator.style.fontSize = "14px";
-stateIndicator.style.fontFamily = "monospace";
+stateIndicator.style.borderRadius = "16px";
+stateIndicator.style.fontSize = "22px";
+stateIndicator.style.fontWeight = "bold";
+stateIndicator.style.fontFamily = "sans-serif";
+stateIndicator.style.textAlign = "center";
+stateIndicator.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)";
+stateIndicator.style.transition = "opacity 0.4s ease";
 stateIndicator.style.zIndex = "9999";
 document.body.appendChild(stateIndicator);
 
-function updateIndicator() {
-  const env = window.innerWidth <= 768 ? "mobile" : "desktop";
+function updateIndicator(env) {
+  const current =
+    env || (window.innerWidth <= 768 ? "mobile" : "desktop");
   stateIndicator.textContent =
-    env === "mobile"
+    current === "mobile"
       ? "📱 СОСТОЯНИЕ МОБИЛЬНОЙ СТРАНИЦЫ"
       : "💻 СОСТОЯНИЕ ПК";
+
+  stateIndicator.style.opacity = "1";
+  clearTimeout(updateIndicator._timer);
+  updateIndicator._timer = setTimeout(() => {
+    stateIndicator.style.opacity = "0.3"; // плавное затухание
+  }, 2000);
 }
-window.addEventListener("resize", updateIndicator);
-window.addEventListener("DOMContentLoaded", updateIndicator);
+
+window.addEventListener("resize", () => updateIndicator());
+window.addEventListener("DOMContentLoaded", () => updateIndicator());
