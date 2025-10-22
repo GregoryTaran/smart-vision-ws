@@ -22,12 +22,12 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidde
   background: rgba(0,0,0,0.15);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
   z-index: 5;
 }
 body.menu-open #overlay { opacity: 1; pointer-events: all; }
 
-/* меню */
+/* side menu */
 #side-menu {
   position: fixed;
   top: 0; left: 0;
@@ -40,7 +40,7 @@ body.menu-open #overlay { opacity: 1; pointer-events: all; }
   transition: transform 0.4s ease;
 }
 
-/* 📱 Mobile */
+/* MOBILE */
 @media (max-width: 768px) {
   #side-menu {
     width: var(--menu-mobile);
@@ -53,7 +53,7 @@ body.menu-open #overlay { opacity: 1; pointer-events: all; }
   }
 }
 
-/* 💻 Desktop */
+/* DESKTOP */
 @media (min-width: 769px) {
   #overlay { display: none; }
   #side-menu {
@@ -121,7 +121,7 @@ main { flex: 1; display: flex; align-items: center; justify-content: center; pad
 .main-block { max-width: 720px; margin: 0 auto; }
 footer { text-align: center; font-size: 14px; border-top: 1px solid #ccc; padding: 12px 0; margin-top: auto; }
 
-/* Кнопка состояния */
+/* center button */
 .env-btn {
   display: inline-block;
   margin-bottom: 20px;

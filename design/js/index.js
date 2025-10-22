@@ -17,7 +17,18 @@ document.getElementById("footer").innerHTML = `
   <small>© 2025 Smart Vision</small>
 `;
 
-// определяем тип среды
+// ======== Состояние страницы ========
+function envLabel() {
+  return window.innerWidth <= 768 ? "📱 Мобильная страница" : "💻 ПК-страница";
+}
+function renderEnvBtn() {
+  if (!envBtn) return;
+  envBtn.textContent = envLabel();
+}
+window.addEventListener("resize", renderEnvBtn);
+window.addEventListener("DOMContentLoaded", renderEnvBtn);
+
+// ======== Определение среды ========
 function getEnv() {
   return window.innerWidth <= 768 ? "mobile" : "desktop";
 }
@@ -32,43 +43,34 @@ function applyEnv() {
 
   if (env === "mobile") initMobile();
   else initDesktop();
-  updateEnvButton();
+
+  renderEnvBtn();
 }
 
+// ======== Мобильная логика ========
 function initMobile() {
   toggle.onclick = () => document.body.classList.toggle("menu-open");
   overlay.onclick = () => document.body.classList.remove("menu-open");
+
+  const menuCloseBtn = document.getElementById("menu-close");
+  if (menuCloseBtn) menuCloseBtn.onclick = () => document.body.classList.remove("menu-open");
+
+  let startX = 0;
+  menu.addEventListener("touchstart", e => (startX = e.touches[0].clientX), { passive: true });
+  menu.addEventListener("touchend", e => {
+    const endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) document.body.classList.remove("menu-open");
+  }, { passive: true });
 }
 
+// ======== ПК логика ========
 function initDesktop() {
+  document.body.classList.remove("menu-open");
   toggle.onclick = () => document.body.classList.toggle("menu-open");
+
+  const menuCloseBtn = document.getElementById("menu-close");
+  if (menuCloseBtn) menuCloseBtn.onclick = () => document.body.classList.remove("menu-open");
 }
 
-function updateEnvButton() {
-  if (!envBtn) return;
-  const env = getEnv();
-  envBtn.textContent = env === "mobile" ? "📱 Мобильная страница" : "💻 ПК-страница";
-}
-
-envBtn.addEventListener("click", updateEnvButton);
 window.addEventListener("resize", applyEnv);
 window.addEventListener("DOMContentLoaded", applyEnv);
-
-// === MOBILE MENU FIX: стрелка + свайп ===
-const menuCloseBtn = document.getElementById("menu-close");
-const menu = document.getElementById("side-menu");
-
-// закрытие меню по стрелке
-if (menuCloseBtn) {
-  menuCloseBtn.addEventListener("click", () => {
-    document.body.classList.remove("menu-open");
-  });
-}
-
-// свайп влево для закрытия
-let startX = 0;
-menu.addEventListener("touchstart", e => (startX = e.touches[0].clientX), { passive: true });
-menu.addEventListener("touchend", e => {
-  const endX = e.changedTouches[0].clientX;
-  if (startX - endX > 50) document.body.classList.remove("menu-open");
-}, { passive: true });
