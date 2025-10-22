@@ -1,24 +1,14 @@
-// ======== Smart Vision UI System (v3.8) ========
-// Среда определяется в index.html (window.SMART_ENV)
-// Этот файл отвечает за динамическую отрисовку, состояние и реакцию интерфейса.
-
+// ======== Smart Vision index.js v3.9 ========
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
 
-console.log(`🌍 Smart Vision (${CONFIG.PROJECT_NAME}) v${CONFIG.VERSION}`);
-
-// ---------- STATE ----------
 const STATE = {
   env: window.SMART_ENV || "desktop",
   user: null,
   page: "home",
-  uiFlags: {
-    menuOpen: false,
-    debugVisible: false
-  }
+  uiFlags: { menuOpen: false }
 };
 
-// ---------- ROOT ----------
 const root = {
   header: document.querySelector("header"),
   menu: document.getElementById("side-menu"),
@@ -27,28 +17,18 @@ const root = {
   overlay: document.getElementById("overlay")
 };
 
-// ========== INIT ==========
-window.addEventListener("DOMContentLoaded", () => {
-  setupInitialState();
-  renderApp();
-  attachGlobalEvents();
-  initSwipe();
-  console.log(`✅ Environment detected: ${STATE.env}`);
-});
+// DOM Ready гарант
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", init);
+} else init();
 
-// ---------- INITIAL SETUP ----------
-function setupInitialState() {
-  document.body.dataset.env = STATE.env;
-  if (STATE.env === "desktop") {
-    document.body.classList.add("menu-open");
-    STATE.uiFlags.menuOpen = true;
-  } else {
-    document.body.classList.remove("menu-open");
-    STATE.uiFlags.menuOpen = false;
-  }
+function init() {
+  renderApp();
+  attachEvents();
+  console.log(`✅ Smart Vision UI initialized (${STATE.env})`);
+  setInterval(updateEnvButton, 1000); // чекер обновляется раз в секунду
 }
 
-// ========== RENDER ==========
 function renderApp() {
   renderHeader();
   renderMenuBlock();
@@ -59,13 +39,9 @@ function renderApp() {
 
 // ---------- HEADER ----------
 function renderHeader() {
-  const userLabel = STATE.user ? STATE.user.name : "Гость";
   root.header.innerHTML = `
     <button id="menu-toggle" aria-label="Открыть меню">☰</button>
-    <div id="logo-wrap">
-      <img src="assets/logo_${STATE.env}.png" alt="Smart Vision" id="logo">
-    </div>
-    <div class="user-label">${userLabel}</div>
+    <img src="assets/logo.png" id="logo" alt="Smart Vision">
   `;
   document.getElementById("menu-toggle").onclick = toggleMenu;
 }
@@ -79,36 +55,12 @@ function renderMenuBlock() {
 
 // ---------- MAIN ----------
 function renderMain() {
-  const content = {
-    home: `
-      <section class="main-block">
-        <h2>Ясность начинается здесь</h2>
-        <p>Smart Vision чувствует контекст. Сейчас ты находишься в среде: <b>${STATE.env}</b>.</p>
-        <p>Интерфейс подстраивается под тебя и показывает только то, что важно.</p>
-      </section>`,
-    about: `
-      <section class="main-block">
-        <h2>О проекте</h2>
-        <p>Smart Vision — это система, где интеллект становится формой присутствия. Всё управляется состоянием (STATE), без лишнего кода и случайностей.</p>
-      </section>`,
-    policy: `
-      <section class="main-block">
-        <h2>Политика конфиденциальности</h2>
-        <p>Smart Vision ценит твоё внимание и данные. Мы не храним личную информацию, кроме необходимого для работы системы.</p>
-      </section>`,
-    terms: `
-      <section class="main-block">
-        <h2>Условия использования</h2>
-        <p>Используя Smart Vision, ты соглашаешься с принципами ясности, фокуса и интеллекта как формы взаимодействия.</p>
-      </section>`,
-    notfound: `
-      <section class="main-block">
-        <h2>Страница не найдена</h2>
-        <p>Возможно, ты ищешь то, чего ещё нет. Но всё начинается с намерения.</p>
-      </section>`
-  };
-
-  root.main.innerHTML = content[STATE.page] || content.notfound;
+  root.main.innerHTML = `
+    <section class="main-block">
+      <h2>Smart Vision — ясность, фокус, интеллект, свобода.</h2>
+      <p>Среда: <b>${STATE.env}</b></p>
+      <p>Страница: <b>${STATE.page}</b></p>
+    </section>`;
 }
 
 // ---------- FOOTER ----------
@@ -122,48 +74,36 @@ function renderFooter() {
     <br>
     <small>© 2025 Smart Vision</small>
     <div style="margin-top:10px;">
-      <button id="env-btn" class="env-btn">Проверить состояние</button>
-    </div>
-  `;
-
-  const btn = document.getElementById("env-btn");
-  if (btn) {
-    btn.onclick = () => {
-      alert(`📋 Текущее состояние:\n\n${formatState()}`);
-    };
-  }
+      <button id="env-btn" class="env-btn"></button>
+    </div>`;
 }
 
-// ---------- STATE FORMATTER ----------
+// ---------- CHECKER ----------
 function formatState() {
   const { env, user, page, uiFlags } = STATE;
-  return JSON.stringify({ env, user: user ? user.name : "guest", page, uiFlags }, null, 2);
+  return `env:${env} | page:${page} | menu:${uiFlags.menuOpen}`;
 }
-
 function updateEnvButton() {
   const btn = document.getElementById("env-btn");
-  if (btn) btn.textContent = "Проверить состояние";
+  if (btn) btn.textContent = formatState();
 }
 
 // ---------- EVENTS ----------
-function attachGlobalEvents() {
+function attachEvents() {
   root.overlay.onclick = closeMenu;
   window.addEventListener("hashchange", setPageFromHash);
+  initSwipe();
 }
 
 function toggleMenu() {
   STATE.uiFlags.menuOpen = !STATE.uiFlags.menuOpen;
   document.body.classList.toggle("menu-open", STATE.uiFlags.menuOpen);
-  updateEnvButton();
 }
-
 function closeMenu() {
-  document.body.classList.remove("menu-open");
   STATE.uiFlags.menuOpen = false;
-  updateEnvButton();
+  document.body.classList.remove("menu-open");
 }
 
-// ---------- HASHCHANGE ----------
 function setPageFromHash() {
   const hash = window.location.hash.replace("#", "") || "home";
   if (hash !== STATE.page) {
@@ -174,40 +114,14 @@ function setPageFromHash() {
 }
 
 // ---------- SWIPE ----------
-let touchStartX = 0;
-let touchEndX = 0;
-
+let startX = 0;
 function initSwipe() {
   if (STATE.env !== "mobile") return;
-
-  window.addEventListener("touchstart", e => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
-
+  window.addEventListener("touchstart", e => startX = e.touches[0].clientX);
   window.addEventListener("touchend", e => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipeGesture();
+    const dx = e.changedTouches[0].clientX - startX;
+    if (dx > 80) STATE.uiFlags.menuOpen = true;
+    if (dx < -80) STATE.uiFlags.menuOpen = false;
+    document.body.classList.toggle("menu-open", STATE.uiFlags.menuOpen);
   });
-}
-
-function handleSwipeGesture() {
-  const diff = touchEndX - touchStartX;
-  if (diff > 80) toggleMenu(true);
-  if (diff < -80) closeMenu();
-}
-// --- DOM READY FIX ---
-if (document.readyState === "loading") {
-  window.addEventListener("DOMContentLoaded", () => {
-    console.log("⚙️ DOM fully loaded, rendering UI...");
-    setupInitialState();
-    renderApp();
-    attachGlobalEvents();
-    initSwipe();
-  });
-} else {
-  console.log("⚙️ DOM already ready, rendering immediately...");
-  setupInitialState();
-  renderApp();
-  attachGlobalEvents();
-  initSwipe();
 }
