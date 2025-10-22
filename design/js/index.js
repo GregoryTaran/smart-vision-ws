@@ -195,3 +195,19 @@ function handleSwipeGesture() {
   if (diff > 80) toggleMenu(true);
   if (diff < -80) closeMenu();
 }
+// --- DOM READY FIX ---
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", () => {
+    console.log("⚙️ DOM fully loaded, rendering UI...");
+    setupInitialState();
+    renderApp();
+    attachGlobalEvents();
+    initSwipe();
+  });
+} else {
+  console.log("⚙️ DOM already ready, rendering immediately...");
+  setupInitialState();
+  renderApp();
+  attachGlobalEvents();
+  initSwipe();
+}
