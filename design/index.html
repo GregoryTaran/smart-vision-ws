@@ -4,18 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Vision</title>
+
+  <!-- Основные стили -->
   <link rel="stylesheet" href="css/index.css" />
+
+  <!-- Мета-теги проекта -->
+  <meta name="description" content="Smart Vision — система ясности, фокуса и интеллекта как формы присутствия." />
+  <meta name="theme-color" content="#ffffff" />
 </head>
+
 <body>
+  <!-- ========== БАЗОВЫЙ КАРКАС ========== -->
+
+  <!-- Левое (или выезжающее) меню -->
   <nav id="side-menu"></nav>
+
+  <!-- overlay для затемнения при открытом меню -->
   <div id="overlay"></div>
 
+  <!-- Основная страница -->
   <div id="page-wrapper">
+    <!-- HEADER → логотип + кнопка меню -->
     <header></header>
+
+    <!-- MAIN → сюда рендерится содержимое текущей страницы -->
     <main id="content"></main>
+
+    <!-- FOOTER → политика, копирайт, и кнопка состояния -->
     <footer id="footer"></footer>
   </div>
 
+  <!-- Основная логика интерфейса -->
   <script type="module" src="js/index.js"></script>
 </body>
 </html>
