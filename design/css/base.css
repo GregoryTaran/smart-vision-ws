@@ -7,6 +7,7 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidden; }
 
+/* базовая структура */
 #page-wrapper {
   min-height: 100vh;
   display: flex;
@@ -27,7 +28,7 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidde
 }
 body.menu-open #overlay { opacity: 1; pointer-events: all; }
 
-/* side menu base */
+/* side menu */
 #side-menu {
   position: fixed;
   top: 0; left: 0;

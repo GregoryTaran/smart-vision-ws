@@ -1,6 +1,6 @@
-// ======== Smart Vision UI System (v2.7) ========
-// Контент страниц восстановлен, CSS подключается по STATE.env,
-// меню на мобильной версии закрывается при выборе страницы.
+// ======== Smart Vision UI System (v2.8) ========
+// CSS подгружается по STATE.env
+// меню закрывается на мобильном при переходе и свайпе
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -28,10 +28,11 @@ const root = {
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
   applyEnv();
-  loadCSS("base");                // общий стиль
-  loadCSS(STATE.env);             // mobile или desktop
+  loadCSS("base");        // общий стиль
+  loadCSS(STATE.env);     // mobile или desktop
   renderApp();
   attachGlobalEvents();
+  initSwipe();            // свайп-жесты
   updateEnvButton();
 });
 
@@ -201,6 +202,31 @@ function setPageFromHash() {
 
   // 💡 Закрываем меню на мобильной версии при выборе страницы
   if (STATE.env === "mobile") {
+    document.body.classList.remove("menu-open");
+    STATE.uiFlags.menuOpen = false;
+    updateEnvButton();
+  }
+}
+
+// ---------- SWIPE GESTURES ----------
+let touchStartX = 0;
+let touchEndX = 0;
+
+function initSwipe() {
+  window.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, false);
+
+  window.addEventListener("touchend", e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipeGesture();
+  }, false);
+}
+
+function handleSwipeGesture() {
+  const diff = touchEndX - touchStartX;
+  // свайп влево (diff < -70) закрывает меню
+  if (STATE.env === "mobile" && STATE.uiFlags.menuOpen && diff < -70) {
     document.body.classList.remove("menu-open");
     STATE.uiFlags.menuOpen = false;
     updateEnvButton();
