@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Vision Design v3.6</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Vision Design v3.8</title>
 
-  <!-- 🔹 Главный загрузчик среды -->
+  <!-- 1️⃣ Базовые стили без анимаций -->
+  <link rel="stylesheet" href="css/base.css" />
+
+  <!-- 2️⃣ Контролируемый загрузчик среды -->
   <script>
-    (function() {
-      // 1️⃣ Определяем тип устройства
-      const env = window.innerWidth <= 768 ? 'mobile' : 'desktop';
-      document.documentElement.dataset.env = env;
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("🧠 Smart Vision: DOM готов, инициализация среды...");
+
+      // Определяем тип устройства
+      const env = window.innerWidth <= 768 ? "mobile" : "desktop";
+      document.body.dataset.env = env;
       window.SMART_ENV = env;
 
-      // 2️⃣ Подключаем базовые стили
-      const base = document.createElement('link');
-      base.rel = 'stylesheet';
-      base.href = 'css/base.css';
-      document.head.appendChild(base);
-
-      // 3️⃣ Подключаем нужный env-стиль
-      const envStyle = document.createElement('link');
-      envStyle.rel = 'stylesheet';
+      // Подключаем нужный env-стиль
+      const envStyle = document.createElement("link");
+      envStyle.rel = "stylesheet";
       envStyle.href = `css/${env}.css`;
-      envStyle.id = 'env-style';
+
+      // Когда стиль загружен — подключаем JS
+      envStyle.onload = () => {
+        console.log(`🎨 Загрузился стиль: ${env}.css`);
+
+        const app = document.createElement("script");
+        app.type = "module";
+        app.src = "js/index.js";
+        document.head.appendChild(app);
+
+        console.log("⚙️ Smart Vision JS загружен после стилей");
+      };
+
       document.head.appendChild(envStyle);
-
-      // 4️⃣ После этого — грузим интерфейс
-      const app = document.createElement('script');
-      app.type = 'module';
-      app.src = 'js/index.js';
-      document.head.appendChild(app);
-
-      console.log(`🧠 Smart Vision: environment "${env}"`);
-    })();
+    });
   </script>
 </head>
 
