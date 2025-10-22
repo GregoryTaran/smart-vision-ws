@@ -1,11 +1,15 @@
-/* ======== Smart Vision Base (v3.5 full) ======== */
+/* ======== Smart Vision Base (v3.5.2) ======== */
 :root {
   --menu-desktop: 400px;
   --menu-mobile: 80%;
   --gray-bg: #f2f2f2;
 }
 
-* { box-sizing: border-box; }
+/* глобально включаем корректное вычисление ширины */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -43,6 +47,8 @@ body.menu-open #overlay {
   z-index: 10;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
 }
 
 /* header / main / footer */
@@ -64,7 +70,6 @@ header {
   cursor: pointer;
 }
 
-/* логотип общий */
 #logo-wrap {
   display: flex;
   align-items: center;

@@ -1,4 +1,4 @@
-/* ======== Smart Vision Desktop (v3.5) ======== */
+/* ======== Smart Vision Desktop (v3.5.2) ======== */
 
 body[data-env="desktop"] {
   display: flex;
@@ -18,22 +18,30 @@ body[data-env="desktop"] #side-menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 400px !important;
-  min-width: 400px !important;
-  max-width: 400px !important;
-  height: 100vh;
+
+  /* 🔹 Точная ширина */
+  width: var(--menu-desktop);
+  min-width: var(--menu-desktop);
+  max-width: var(--menu-desktop);
+
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: none;
+  flex-shrink: 0;
+  overflow-y: auto;
+
+  height: 100vh;
   background: #fff;
+  box-shadow: 3px 0 10px rgba(0,0,0,0.1);
   z-index: 10;
-  display: flex;
-  flex-direction: column;
 }
 
 /* Header (70px) */
 body[data-env="desktop"] header {
   position: fixed;
   top: 0;
-  left: 400px;
+  left: var(--menu-desktop);
   right: 0;
   height: 70px;
   z-index: 8;
@@ -47,17 +55,16 @@ body[data-env="desktop"] header {
 /* Основная зона */
 body[data-env="desktop"] main {
   flex: 1;
-  margin-left: 400px;
+  margin-left: var(--menu-desktop);
   padding-top: 70px;
   padding-bottom: 40px;
 }
 
 /* Футер */
 body[data-env="desktop"] footer {
-  margin-left: 400px;
-  margin-top: auto;
+  margin-left: var(--menu-desktop);
   position: relative;
-  width: calc(100% - 400px);
+  width: calc(100% - var(--menu-desktop));
   border-top: 1px solid #ccc;
   background: #fff;
 }
