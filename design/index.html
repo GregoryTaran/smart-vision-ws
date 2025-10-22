@@ -5,8 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Vision Design v3.5</title>
 
+  <!-- 🔹 Раннее определение среды (до загрузки CSS) -->
+  <script>
+    (function() {
+      var env = window.innerWidth <= 768 ? 'mobile' : 'desktop';
+      document.documentElement.dataset.env = env;
+      window.SMART_ENV = env;
+    })();
+  </script>
+
   <!-- базовые общие стили -->
   <link rel="stylesheet" href="css/base.css">
+
+  <!-- 🔹 Мгновенная подгрузка нужного env-стиля (после base.css) -->
+  <script>
+    (function() {
+      try {
+        var env = window.SMART_ENV || (window.innerWidth <= 768 ? 'mobile' : 'desktop');
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'css/' + env + '.css';
+        link.id = 'env-style';
+        document.head.appendChild(link);
+      } catch(e) {}
+    })();
+  </script>
 
   <!-- логика интерфейса -->
   <script type="module" src="js/index.js" defer></script>

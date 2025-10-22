@@ -26,7 +26,7 @@ const root = {
 
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
-  detectAndLoadEnvCSS();   // ← выбор и загрузка стиля
+  detectAndLoadEnvCSS();   // ← выбор и загрузка стиля (без дублирования)
   renderApp();
   attachGlobalEvents();
   initSwipe();
@@ -43,11 +43,12 @@ function detectEnv() {
 }
 
 function detectAndLoadEnvCSS() {
-  const env = detectEnv();
+  // Берём ранне-определённый env (из index.html); fallback — локальное определение.
+  const env = window.SMART_ENV || detectEnv();
   STATE.env = env;
   document.body.dataset.env = env;
 
-  // ✅ исправлено: меню закрыто на мобиле, открыто на десктопе
+  // Меню: открыто только на десктопе при старте
   if (env === "desktop") {
     document.body.classList.add("menu-open");
     STATE.uiFlags.menuOpen = true;
@@ -56,13 +57,15 @@ function detectAndLoadEnvCSS() {
     STATE.uiFlags.menuOpen = false;
   }
 
-  // загружаем только нужный стиль
-  const cssFile = `css/${env}.css`;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = cssFile;
-  link.id = "env-style";
-  document.head.appendChild(link);
+  // Если нужный env-стиль ещё не подключён (на случай чистого HTML без скрипта в <head>), подключим его здесь.
+  if (!document.getElementById("env-style")) {
+    const cssFile = `css/${env}.css`;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = cssFile;
+    link.id = "env-style";
+    document.head.appendChild(link);
+  }
 }
 
 function applyEnv() {
@@ -123,7 +126,15 @@ function renderMain() {
     terms: `
       <section class="main-block">
         <h2>Условия использования</h2>
-        <p>Используя Smart Vision, вы соглашаетесь с нашими принципами ясности и ответственности.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
+        <p>Повторитель текста — это простой онлайн-инструмент, позволяющий повторять текст выбранное количество раз. Полученный текст можно скопировать и вставить куда угодно, включая WhatsApp, Messenger, SMS, Telegram или любые другие социальные сети.</p>
       </section>`,
     contacts: `
       <section class="main-block">
