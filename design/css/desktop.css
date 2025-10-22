@@ -1,4 +1,4 @@
-/* ======== Smart Vision Desktop (v3.1) ======== */
+/* ======== Smart Vision Desktop (v3.5) ======== */
 
 body[data-env="desktop"] {
   display: flex;
@@ -7,9 +7,9 @@ body[data-env="desktop"] {
   overflow-x: hidden;
 }
 
-/* Логотип — регулируется только здесь */
+/* Логотип */
 body[data-env="desktop"] #logo {
-  max-width: 400px; /* можешь менять на любое значение */
+  max-width: 400px;
   padding: 10px 0;
 }
 
@@ -62,6 +62,7 @@ body[data-env="desktop"] footer {
   background: #fff;
 }
 
+/* скрываем ненужные элементы */
 body[data-env="desktop"] #overlay { display: none !important; }
 body[data-env="desktop"] #menu-toggle,
 body[data-env="desktop"] .menu-close { display: none; }

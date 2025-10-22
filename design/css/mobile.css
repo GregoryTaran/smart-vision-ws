@@ -1,4 +1,4 @@
-/* ======== Smart Vision Mobile (v3.1) ======== */
+/* ======== Smart Vision Mobile (v3.5) ======== */
 
 body[data-env="mobile"] {
   display: flex;
@@ -6,9 +6,9 @@ body[data-env="mobile"] {
   min-height: 100vh;
 }
 
-/* Логотип — управляем отдельно */
+/* Логотип */
 body[data-env="mobile"] #logo {
-  max-width: 260px; /* можешь ставить любое значение */
+  max-width: 260px;
   margin: 0 auto;
   padding: 8px 0;
 }
@@ -17,16 +17,19 @@ body[data-env="mobile"] #logo {
 body[data-env="mobile"] #side-menu {
   width: var(--menu-mobile);
   transform: translateX(-100%);
+  transition: transform 0.4s ease;
 }
 body[data-env="mobile"].menu-open #side-menu {
   transform: translateX(0);
 }
 
-/* Footer */
+/* Основная часть */
 body[data-env="mobile"] main {
   flex: 1 0 auto;
   padding-bottom: 70px;
 }
+
+/* Футер (прижат) */
 body[data-env="mobile"] footer {
   position: fixed;
   bottom: 0;

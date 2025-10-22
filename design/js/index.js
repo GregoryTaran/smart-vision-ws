@@ -1,5 +1,5 @@
-// ======== Smart Vision UI System (v3.0 clean) ========
-// Без предзагрузки CSS. Чистая логика STATE, ENV и меню.
+// ======== Smart Vision UI System (v3.5 stable env-style) ========
+// Логика STATE, ENV и подгрузка нужного CSS при старте.
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -26,29 +26,43 @@ const root = {
 
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
-  applyEnv();
+  detectAndLoadEnvCSS();   // ← добавлено: выбор и загрузка стиля
   renderApp();
   attachGlobalEvents();
   initSwipe();
   updateEnvButton();
+  console.log(`✅ Environment: ${STATE.env}`);
 });
 
 window.addEventListener("resize", applyEnv);
 window.addEventListener("hashchange", setPageFromHash);
 
-// ========== ENV DETECT ==========
+// ========== ENV DETECT + LOAD ==========
 function detectEnv() {
   return window.innerWidth <= 768 ? "mobile" : "desktop";
+}
+
+function detectAndLoadEnvCSS() {
+  const env = detectEnv();
+  STATE.env = env;
+  document.body.dataset.env = env;
+  document.body.classList.toggle("menu-open", env === "desktop");
+  STATE.uiFlags.menuOpen = env === "desktop";
+
+  // загружаем только нужный стиль
+  const cssFile = `css/${env}.css`;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = cssFile;
+  link.id = "env-style";
+  document.head.appendChild(link);
 }
 
 function applyEnv() {
   const env = detectEnv();
   if (STATE.env !== env) {
-    STATE.env = env;
-    document.body.dataset.env = env;
-    document.body.classList.toggle("menu-open", env === "desktop");
-    STATE.uiFlags.menuOpen = env === "desktop";
-    updateEnvButton();
+    // если размер экрана изменился, просим обновить страницу
+    console.log("🔄 Среда изменилась. Для корректного отображения обновите страницу (F5).");
   }
 }
 

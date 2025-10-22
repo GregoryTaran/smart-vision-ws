@@ -1,37 +1,22 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Vision Design v2.8</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Vision Design v3.5</title>
 
-    <!-- 🌐 Мета -->
-    <meta name="description" content="Smart Vision — интерфейс ясности, фокуса и интеллекта как формы присутствия.">
+  <!-- базовые общие стили -->
+  <link rel="stylesheet" href="css/base.css">
 
-    <!-- ✅ Новый CSS — всё динамически подгружается через JS -->
-    <!-- base.css, mobile.css, desktop.css подключаются из index.js -->
-  </head>
+  <!-- логика интерфейса -->
+  <script type="module" src="js/index.js" defer></script>
+</head>
 
-  <body>
-    <div id="overlay"></div>
-
-    <header></header>
-
-    <!-- Блок меню -->
-    <nav id="side-menu"></nav>
-
-    <!-- Основной контент -->
-    <main id="content">
-      <section class="main-block">
-        <h2>Smart Vision Design</h2>
-        <p>Загрузка интерфейса...</p>
-      </section>
-    </main>
-
-    <!-- Нижняя панель -->
-    <footer id="footer"></footer>
-
-    <!-- Основной JS -->
-    <script type="module" src="js/index.js"></script>
-  </body>
+<body>
+  <header></header>
+  <nav id="side-menu"></nav>
+  <main id="content"></main>
+  <footer id="footer"></footer>
+  <div id="overlay"></div>
+</body>
 </html>
