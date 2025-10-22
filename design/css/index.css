@@ -1,29 +1,24 @@
-:root{
-  --active-gray: #ececec; /* активный пункт */
-  --mobile-right: #f2f2f2; /* правая часть при выезде на мобиле */
+:root {
+  --active-gray: #ececec;
+  --mobile-right: #f2f2f2;
 }
-*{box-sizing:border-box;}
-html,body{height:100%;}
-body {
-  margin: 0;
-  font-family: sans-serif;
-  overflow-x: hidden;
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidden; }
+
+/* контейнер всей страницы */
+#page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  transition: width 0.4s ease, background 0.3s ease;
 }
 
-/* Область, которую двигаем и которая держит футер внизу */
-#page-wrapper{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  transition: transform 0.4s ease, width 0.4s ease, background 0.3s ease;
-  background:#fff;
-}
-
-/* Поле клика для мобилы */
+/* overlay для мобилы */
 #overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0,0,0,0.15);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -34,41 +29,38 @@ body.menu-open #overlay {
   pointer-events: all;
 }
 
-/* Левое меню */
+/* левое меню */
 #side-menu {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 80%;          /* мобила — 80% */
-  max-width: 400px;    /* на ПК открытая ширина 400px */
+  top: 0; left: 0;
+  width: 80%;
+  max-width: 400px;
   height: 100%;
   background: #fff;
-  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 0 10px rgba(0,0,0,0.2);
   transform: translateX(-100%);
   transition: transform 0.4s ease;
   z-index: 10;
   display: flex;
   flex-direction: column;
 }
-body.menu-open #side-menu {
-  transform: translateX(0);
+body.menu-open #side-menu { transform: translateX(0); }
+
+/* ПК — страница сужается, мобила — двигается */
+@media (min-width: 769px) {
+  #overlay { display: none; }
+  body.menu-open #page-wrapper { width: calc(100% - 400px); }
+}
+@media (max-width: 768px) {
+  body.menu-open #page-wrapper { transform: translateX(80%); background: var(--mobile-right); }
 }
 
-/* Движение страницы одинаково: ПК — 400px, мобила — 80% */
-@media (min-width: 769px){
-  body.menu-open #page-wrapper { transform: translateX(400px); }
-  #overlay{ display:none; } /* на ПК без затемнения */
-}
-@media (max-width: 768px){
-  body.menu-open #page-wrapper { transform: translateX(80%); }
-}
-
-/* Шапка сайта */
+/* хедер */
 header {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60px; /* как договорились */
+  height: 60px;
   padding: 0 20px;
   border-bottom: 1px solid #ccc;
   position: relative;
@@ -81,31 +73,34 @@ header {
   border: none;
   cursor: pointer;
 }
-#logo-wrap{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
+#logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 #logo {
-  max-width: 350px; /* ограничение логотипа */
+  display: block;
   width: 100%;
   height: auto;
-  display:block;
+  max-width: 400px;
+}
+@media (max-width: 768px) {
+  #logo { max-width: 280px; }
 }
 
-/* Контент */
+/* контент */
 main {
-  flex:1;              /* тянется, чтобы футер ушёл вниз */
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
-  text-align: center;  /* центрируем текст */
+  text-align: center;
 }
-.main-block{ max-width: 720px; margin: 0 auto; }
+.main-block { max-width: 720px; margin: 0 auto; }
 
-/* Футер — всегда внизу */
+/* футер */
 footer {
   text-align: center;
   font-size: 14px;
@@ -114,20 +109,18 @@ footer {
   margin-top: auto;
 }
 
-/* Шапка меню */
+/* меню */
 .menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 60px;
   padding: 0 15px;
-  background: #fff;       /* белая, как меню */
+  background: #fff;
   border-bottom: 1px solid #ddd;
 }
 .menu-title { font-weight: bold; font-size: 18px; }
 .menu-close { font-size: 22px; background: none; border: none; cursor: pointer; }
-
-/* Пункты меню */
 .menu-list {
   flex: 1;
   list-style: none;
@@ -141,13 +134,7 @@ footer {
   padding: 15px 20px;
   text-decoration: none;
   color: #222;
-  background: transparent;
   transition: background 0.2s ease;
 }
 .menu-list a:hover { background: #f7f7f7; }
 .menu-list a.active { background: var(--active-gray); }
-
-/* Мобильный серый фон правой части */
-@media (max-width: 768px){
-  body.menu-open #page-wrapper{ background: var(--mobile-right); }
-}
