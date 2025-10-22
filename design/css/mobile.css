@@ -26,7 +26,7 @@ body[data-env="mobile"] header {
   border-bottom: 1px solid #ddd;
   background: #fff;
   position: relative;
-  z-index: 11;
+  z-index: 11; /* шапка ниже меню и overlay */
 }
 
 #menu-toggle {
@@ -57,7 +57,7 @@ body[data-env="mobile"] header {
   box-shadow: 4px 0 15px rgba(0,0,0,0.1);
   transform: translateX(-100%);
   transition: transform 0.4s ease;
-  z-index: 10;
+  z-index: 1000; /* 🔼 меню всегда поверх всего на мобиле */
 }
 
 body[data-env="mobile"].menu-open #side-menu {
@@ -72,7 +72,7 @@ body[data-env="mobile"].menu-open #side-menu {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 5;
+  z-index: 999; /* 🔼 overlay ниже меню, но выше шапки/контента */
 }
 body[data-env="mobile"].menu-open #overlay {
   opacity: 1;
@@ -171,5 +171,5 @@ body[data-env="mobile"] footer {
 
 /* ---------- ПРЕЛОАД ---------- */
 body.preload #side-menu {
-  transition: none !important;
+  transition: none !important; /* без анимации до инициализации JS */
 }
