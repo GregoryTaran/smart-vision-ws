@@ -1,4 +1,4 @@
-/* ======== Smart Vision Desktop (v2.9.3) ======== */
+/* ======== Smart Vision Desktop (v2.9.4) ======== */
 
 body[data-env="desktop"] {
   display: flex;
@@ -6,18 +6,20 @@ body[data-env="desktop"] {
   min-height: 100vh;
 }
 
+/* 💪 Фикс ширины меню 400px */
 body[data-env="desktop"] #side-menu {
-  width: var(--menu-desktop) !important;
-  min-width: var(--menu-desktop);
-  max-width: var(--menu-desktop);
+  width: 400px !important;
+  min-width: 400px !important;
+  max-width: 400px !important;
   transform: translateX(0);
   left: 0;
+  box-sizing: border-box;
 }
 
 body[data-env="desktop"] header {
   position: fixed;
   top: 0;
-  left: var(--menu-desktop);
+  left: 400px; /* точно совпадает с меню */
   right: 0;
   height: 60px;
   z-index: 8;
@@ -25,21 +27,37 @@ body[data-env="desktop"] header {
 
 body[data-env="desktop"] main {
   flex: 1;
-  margin-left: var(--menu-desktop);
+  margin-left: 400px;
   padding-top: 60px;
   padding-bottom: 40px;
 }
 
 body[data-env="desktop"] footer {
-  margin-left: var(--menu-desktop);
+  margin-left: 400px;
   margin-top: auto;
   position: relative;
   bottom: 0;
   left: 0;
-  width: calc(100% - var(--menu-desktop));
+  width: calc(100% - 400px);
   border-top: 1px solid #ccc;
   background: #fff;
 }
 
+/* overlay отключён */
+body[data-env="desktop"] #overlay {
+  display: none !important;
+}
+
+/* бургер и крестик скрыты */
 body[data-env="desktop"] #menu-toggle { display: none; }
 body[data-env="desktop"] .menu-close { display: none; }
+
+/* меню */
+body[data-env="desktop"] .menu-header {
+  background: var(--gray-bg);
+  border-bottom: 1px solid #ddd;
+}
+body[data-env="desktop"] .menu-list a:hover,
+body[data-env="desktop"] .menu-list a.active {
+  background: #ececec;
+}
