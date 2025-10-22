@@ -1,91 +1,49 @@
-/* ======== Smart Vision Desktop (v3.7) ======== */
-/* Отдельная версия для ПК — фиксированное левое меню с возможностью скрытия. */
-
-body[data-env="desktop"] {
-  background: #fff;
-  color: #000;
-  font-size: 16px;
+/* ======== Smart Vision Desktop (v3.9) ======== */
+#side-menu {
+  width: var(--menu-desktop);
+  background: var(--gray-bg);
+  border-right: 1px solid var(--border-gray);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
   overflow-y: auto;
+  padding: 30px 20px;
 }
 
-/* --- MENU --- */
-body[data-env="desktop"] #side-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: var(--menu-desktop, 400px);
-  height: 100vh;
-  background: #fafafa;
-  border-right: 1px solid #ddd;
-  padding: 20px;
-  transition: transform 0.4s ease;
-  z-index: 1000;
-}
-
-body[data-env="desktop"] #side-menu img.logo {
-  width: 180px;
-  margin-bottom: 30px;
-  content: url("../assets/logo_desktop.png");
-}
-
-/* Меню скрытое состояние */
-body[data-env="desktop"]:not(.menu-open) #side-menu {
-  transform: translateX(-100%);
-}
-
-/* --- HEADER --- */
-body[data-env="desktop"] header {
-  position: fixed;
-  top: 0;
-  left: var(--menu-desktop, 400px);
-  height: 70px;
-  width: calc(100% - var(--menu-desktop, 400px));
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background: #fff;
-  transition: left 0.4s ease, width 0.4s ease;
-}
-
-body[data-env="desktop"]:not(.menu-open) header {
-  left: 0;
-  width: 100%;
-}
-
-/* --- MAIN --- */
-body[data-env="desktop"] main {
-  margin-left: var(--menu-desktop, 400px);
-  padding: 100px 40px 80px;
+main {
+  margin-left: var(--menu-desktop);
+  padding: 40px;
+  min-height: 100vh;
   transition: margin-left 0.4s ease;
 }
 
-body[data-env="desktop"]:not(.menu-open) main {
-  margin-left: 0;
-}
-
-/* --- FOOTER --- */
-body[data-env="desktop"] footer {
+header {
   position: fixed;
-  bottom: 0;
-  left: var(--menu-desktop, 400px);
-  height: 60px;
-  width: calc(100% - var(--menu-desktop, 400px));
-  border-top: 1px solid #e0e0e0;
+  top: 0;
+  left: var(--menu-desktop);
+  right: 0;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
-  transition: left 0.4s ease, width 0.4s ease;
+  border-bottom: 1px solid var(--border-gray);
+  z-index: 10;
 }
 
-body[data-env="desktop"]:not(.menu-open) footer {
-  left: 0;
-  width: 100%;
+#logo {
+  width: 300px;
+  display: block;
+  margin: 0 auto;
 }
 
-/* --- OVERLAY --- */
-body[data-env="desktop"] #overlay {
-  display: none !important;
+footer {
+  margin-left: var(--menu-desktop);
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: var(--text-gray);
+  border-top: 1px solid var(--border-gray);
+  background: #fff;
 }
