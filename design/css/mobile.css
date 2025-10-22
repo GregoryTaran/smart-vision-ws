@@ -19,7 +19,7 @@ body[data-env="mobile"] .menu-close { display: block; }
 
 /* логотип меньше */
 body[data-env="mobile"] #logo {
-  max-width: 260px;
+  max-width: 200px;
   height: auto;
 }
 
