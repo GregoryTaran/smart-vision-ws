@@ -1,128 +1,31 @@
-/* ======== Smart Vision /design — Desktop layout (v2.8.2) ======== */
+/* ======== Smart Vision Desktop (v2.9) ======== */
 
-:root {
-  --menu-desktop: 400px;
-  --bg-gray: #f2f2f2;
-}
-
-/* меню всегда видно */
 body[data-env="desktop"] #side-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
   width: var(--menu-desktop);
-  background: #fff;
-  box-shadow: 3px 0 10px rgba(0,0,0,0.2);
-  z-index: 10;
   transform: translateX(0);
-  transition: transform 0.4s ease;
-  display: flex;
-  flex-direction: column;
+  left: 0;
 }
 
-/* контент смещается вправо */
 body[data-env="desktop"] header,
 body[data-env="desktop"] main,
 body[data-env="desktop"] footer {
   margin-left: var(--menu-desktop);
-  transition: margin-left 0.4s ease;
 }
 
-/* overlay на десктопе не нужен */
 body[data-env="desktop"] #overlay {
   display: none !important;
 }
 
+/* скрываем бургер и крестик */
+body[data-env="desktop"] #menu-toggle { display: none; }
+body[data-env="desktop"] .menu-close { display: none; }
+
 /* меню */
-.menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  background: var(--bg-gray);
+body[data-env="desktop"] .menu-header {
+  background: var(--gray-bg);
   border-bottom: 1px solid #ddd;
-  font-weight: bold;
 }
-.menu-title { font-size: 18px; }
-.menu-close { display: none; } /* крестик не нужен на десктопе */
-.menu-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  flex: 1;
-  overflow-y: auto;
-}
-.menu-list li { border-bottom: 1px solid #eee; }
-.menu-list a {
-  display: block;
-  padding: 14px 20px;
-  color: #333;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-.menu-list a:hover,
-.menu-list a.active {
+body[data-env="desktop"] .menu-list a:hover,
+body[data-env="desktop"] .menu-list a.active {
   background: #ececec;
 }
-
-/* header / main / footer */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-  padding: 0 20px;
-  border-bottom: 1px solid #ccc;
-  background: #fff;
-  position: relative;
-}
-#menu-toggle { display: none; } /* бургер не нужен на ПК */
-
-#logo-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-#logo {
-  display: block;
-  max-width: 400px;
-  width: 100%;
-  height: auto;
-}
-
-main {
-  flex: 1;
-  padding: 40px;
-  background: #fff;
-  text-align: center;
-}
-.main-block {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-footer {
-  text-align: center;
-  font-size: 14px;
-  border-top: 1px solid #ccc;
-  padding: 20px 0;
-  background: #fff;
-}
-
-/* состояние кнопки */
-.env-btn {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #333;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.env-btn:hover { background: #555; }

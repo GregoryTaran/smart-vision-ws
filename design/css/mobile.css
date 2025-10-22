@@ -1,18 +1,29 @@
-#side-menu {
+/* ======== Smart Vision Mobile (v2.9) ======== */
+
+body[data-env="mobile"] #side-menu {
   width: var(--menu-mobile);
   transform: translateX(-100%);
 }
-
-body.menu-open #side-menu { transform: translateX(0); }
-
-body.menu-open #page-wrapper {
-  transform: translateX(var(--menu-mobile));
-  background: var(--gray-bg);
+body[data-env="mobile"].menu-open #side-menu {
+  transform: translateX(0);
 }
 
-#overlay {
+body[data-env="mobile"] header,
+body[data-env="mobile"] main,
+body[data-env="mobile"] footer {
+  transform: none;
+}
+
+body[data-env="mobile"] #overlay {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
 }
-body.menu-open #overlay { opacity: 1; pointer-events: all; }
+body[data-env="mobile"].menu-open #overlay {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* бургер видим, крестик работает */
+body[data-env="mobile"] #menu-toggle { display: block; }
+body[data-env="mobile"] .menu-close { display: block; }
+body[data-env="mobile"] .menu-title { font-size: 17px; }

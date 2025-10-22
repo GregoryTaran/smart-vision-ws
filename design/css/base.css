@@ -1,3 +1,5 @@
+/* ======== Smart Vision Base (v2.9) ======== */
+
 :root {
   --menu-desktop: 400px;
   --menu-mobile: 80%;
@@ -7,13 +9,8 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidden; }
 
-/* базовая структура */
-#page-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  transition: all 0.4s ease;
+header, main, footer {
+  transition: margin-left 0.4s ease, transform 0.4s ease;
 }
 
 /* overlay */
@@ -26,12 +23,16 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidde
   transition: opacity 0.3s ease;
   z-index: 5;
 }
-body.menu-open #overlay { opacity: 1; pointer-events: all; }
+body.menu-open #overlay {
+  opacity: 1;
+  pointer-events: all;
+}
 
 /* side menu */
 #side-menu {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   height: 100vh;
   background: #fff;
   box-shadow: 3px 0 10px rgba(0,0,0,0.2);
@@ -41,7 +42,6 @@ body.menu-open #overlay { opacity: 1; pointer-events: all; }
   transition: transform 0.4s ease;
 }
 
-/* menu style */
 .menu-header {
   display: flex;
   justify-content: space-between;
@@ -53,9 +53,12 @@ body.menu-open #overlay { opacity: 1; pointer-events: all; }
 }
 .menu-title { font-size: 18px; }
 .menu-close {
-  background: none; border: none; font-size: 22px; cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
 }
-.menu-list { list-style: none; padding: 0; margin: 0; }
+.menu-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; }
 .menu-list li { border-bottom: 1px solid #eee; }
 .menu-list a {
   display: block;
@@ -64,7 +67,10 @@ body.menu-open #overlay { opacity: 1; pointer-events: all; }
   color: #333;
   transition: background 0.2s;
 }
-.menu-list a:hover, .menu-list a.active { background: #ececec; }
+.menu-list a:hover,
+.menu-list a.active {
+  background: #ececec;
+}
 
 /* header / main / footer */
 header {
@@ -75,6 +81,7 @@ header {
   padding: 0 20px;
   border-bottom: 1px solid #ccc;
   position: relative;
+  background: #fff;
 }
 #menu-toggle {
   position: absolute;
@@ -86,31 +93,32 @@ header {
 }
 #logo-wrap { display: flex; align-items: center; justify-content: center; width: 100%; }
 #logo { display: block; width: 100%; height: auto; max-width: 400px; }
-@media (max-width: 768px) { #logo { max-width: 270px; } }
 
 main {
   flex: 1;
+  padding: 24px;
+  background: #fff;
+  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  text-align: center;
 }
-.main-block { max-width: 720px; margin: 0 auto; }
+.main-block { max-width: 800px; margin: 0 auto; }
+
 footer {
   text-align: center;
   font-size: 14px;
   border-top: 1px solid #ccc;
   padding: 12px 0;
-  margin-top: auto;
+  background: #fff;
 }
 
-/* center button */
+/* кнопка состояния */
 .env-btn {
   display: inline-block;
-  margin-bottom: 20px;
+  margin-top: 10px;
   padding: 12px 22px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   background: #333;
   color: #fff;
