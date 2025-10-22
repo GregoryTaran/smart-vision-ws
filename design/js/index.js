@@ -1,6 +1,5 @@
-// ======== Smart Vision UI System (v2.8-fix) ========
-// Исправлено подключение CSS (относительный путь для /design/)
-// Меню закрывается на мобильном при переходе и свайпе
+// ======== Smart Vision UI System (v3.0 clean) ========
+// Без предзагрузки CSS. Чистая логика STATE, ENV и меню.
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -28,15 +27,13 @@ const root = {
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
   applyEnv();
-  loadCSS("base");        // общий стиль
-  loadCSS(STATE.env);     // mobile или desktop
   renderApp();
   attachGlobalEvents();
-  initSwipe();            // свайп-жесты
+  initSwipe();
   updateEnvButton();
 });
 
-window.addEventListener("resize", onResize);
+window.addEventListener("resize", applyEnv);
 window.addEventListener("hashchange", setPageFromHash);
 
 // ========== ENV DETECT ==========
@@ -53,36 +50,6 @@ function applyEnv() {
     STATE.uiFlags.menuOpen = env === "desktop";
     updateEnvButton();
   }
-}
-
-// при ресайзе пересоздаём CSS если изменилась среда
-function onResize() {
-  const oldEnv = STATE.env;
-  applyEnv();
-  if (STATE.env !== oldEnv) {
-    removeOldEnvCSS();
-    loadCSS(STATE.env);
-  }
-}
-
-// ========== CSS LOADER ==========
-function loadCSS(name) {
-  const id = `css-${name}`;
-  if (document.getElementById(id)) return;
-  const link = document.createElement("link");
-  link.id = id;
-  link.rel = "stylesheet";
-  link.href = `css/${name}.css`; // ✅ относительный путь
-  link.onload = () => console.log(`✅ CSS loaded: ${name}`);
-  link.onerror = () => console.warn(`⚠️ CSS not found: ${name}`);
-  document.head.appendChild(link);
-}
-
-function removeOldEnvCSS() {
-  ["css-mobile", "css-desktop"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  });
 }
 
 // ========== RENDER ==========
@@ -202,7 +169,6 @@ function setPageFromHash() {
     renderApp();
   }
 
-  // 💡 Закрываем меню на мобильной версии при выборе страницы
   if (STATE.env === "mobile") {
     document.body.classList.remove("menu-open");
     STATE.uiFlags.menuOpen = false;
@@ -227,7 +193,6 @@ function initSwipe() {
 
 function handleSwipeGesture() {
   const diff = touchEndX - touchStartX;
-  // свайп влево (diff < -70) закрывает меню
   if (STATE.env === "mobile" && STATE.uiFlags.menuOpen && diff < -70) {
     document.body.classList.remove("menu-open");
     STATE.uiFlags.menuOpen = false;

@@ -1,4 +1,4 @@
-/* ======== Smart Vision Desktop (v2.9.5 precision-fix) ======== */
+/* ======== Smart Vision Desktop (v3.1) ======== */
 
 body[data-env="desktop"] {
   display: flex;
@@ -7,7 +7,13 @@ body[data-env="desktop"] {
   overflow-x: hidden;
 }
 
-/* 💪 Фикс ширины меню ровно 400px */
+/* Логотип — регулируется только здесь */
+body[data-env="desktop"] #logo {
+  max-width: 400px; /* можешь менять на любое значение */
+  padding: 10px 0;
+}
+
+/* Меню фикс ширины */
 body[data-env="desktop"] #side-menu {
   position: fixed;
   top: 0;
@@ -17,15 +23,13 @@ body[data-env="desktop"] #side-menu {
   max-width: 400px !important;
   height: 100vh;
   box-sizing: border-box;
-  transform: none !important;
-  transition: none !important;
   background: #fff;
   z-index: 10;
   display: flex;
   flex-direction: column;
 }
 
-/* HEADER (высота 70px, фиксирован сверху) */
+/* Header (70px) */
 body[data-env="desktop"] header {
   position: fixed;
   top: 0;
@@ -40,46 +44,24 @@ body[data-env="desktop"] header {
   border-bottom: 1px solid #ccc;
 }
 
-/* основная зона */
+/* Основная зона */
 body[data-env="desktop"] main {
   flex: 1;
   margin-left: 400px;
-  padding-top: 70px;   /* соответствует высоте header */
+  padding-top: 70px;
   padding-bottom: 40px;
 }
 
-/* футер прижат */
+/* Футер */
 body[data-env="desktop"] footer {
   margin-left: 400px;
   margin-top: auto;
   position: relative;
-  bottom: 0;
-  left: 0;
   width: calc(100% - 400px);
   border-top: 1px solid #ccc;
   background: #fff;
 }
 
-/* overlay отключён */
-body[data-env="desktop"] #overlay {
-  display: none !important;
-}
-
-/* бургер и крестик скрыты */
-body[data-env="desktop"] #menu-toggle { display: none; }
+body[data-env="desktop"] #overlay { display: none !important; }
+body[data-env="desktop"] #menu-toggle,
 body[data-env="desktop"] .menu-close { display: none; }
-
-/* меню внутри */
-body[data-env="desktop"] .menu-header {
-  background: var(--gray-bg);
-  border-bottom: 1px solid #ddd;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-}
-body[data-env="desktop"] .menu-list a:hover,
-body[data-env="desktop"] .menu-list a.active {
-  background: #ececec;
-}
