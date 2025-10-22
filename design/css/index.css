@@ -48,11 +48,22 @@ body.menu-open #side-menu { transform: translateX(0); }
 
 /* ПК — страница сужается, мобила — двигается */
 @media (min-width: 769px) {
-  #overlay { display: none; }
-  body.menu-open #page-wrapper { width: calc(100% - 400px); }
+  #overlay {
+    display: none;
+  }
+
+  body.menu-open #page-wrapper {
+    transform: none !important;   /* отменяем сдвиг */
+    margin-left: 400px;           /* меню “вдавливает” страницу */
+    width: calc(100% - 400px);    /* сжимает контент */
+  }
 }
+
 @media (max-width: 768px) {
-  body.menu-open #page-wrapper { transform: translateX(80%); background: var(--mobile-right); }
+  body.menu-open #page-wrapper {
+    transform: translateX(80%);
+    background: var(--mobile-right);
+  }
 }
 
 /* хедер */
