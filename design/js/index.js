@@ -1,5 +1,6 @@
-// ======== Smart Vision UI System (v2.6) ========
-// Автоподключение CSS по STATE.env (base + mobile/desktop)
+// ======== Smart Vision UI System (v2.7) ========
+// Контент страниц восстановлен, CSS подключается по STATE.env,
+// меню на мобильной версии закрывается при выборе страницы.
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -27,12 +28,13 @@ const root = {
 // ========== INIT ==========
 window.addEventListener("DOMContentLoaded", () => {
   applyEnv();
-  loadCSS("base");                // общий стиль всегда
-  loadCSS(STATE.env);             // мобильный или десктоп
+  loadCSS("base");                // общий стиль
+  loadCSS(STATE.env);             // mobile или desktop
   renderApp();
   attachGlobalEvents();
   updateEnvButton();
 });
+
 window.addEventListener("resize", onResize);
 window.addEventListener("hashchange", setPageFromHash);
 
@@ -52,7 +54,7 @@ function applyEnv() {
   }
 }
 
-// при ресайзе пересоздаём CSS-линк если изменилась среда
+// при ресайзе пересоздаём CSS если изменилась среда
 function onResize() {
   const oldEnv = STATE.env;
   applyEnv();
@@ -88,6 +90,7 @@ function renderApp() {
   renderFooter();
 }
 
+// ---------- HEADER ----------
 function renderHeader() {
   const userLabel = STATE.user ? STATE.user.name : "Гость";
   root.header.innerHTML = `
@@ -98,6 +101,7 @@ function renderHeader() {
   document.getElementById("menu-toggle").onclick = toggleMenu;
 }
 
+// ---------- MENU ----------
 function renderMenuBlock() {
   root.menu.innerHTML = renderMenu(STATE.page, STATE.user);
   const closeBtn = document.getElementById("menu-close");
@@ -108,17 +112,47 @@ function renderMenuBlock() {
   };
 }
 
+// ---------- MAIN ----------
 function renderMain() {
   const content = {
-    home: `<section class="main-block"><h2>Главная страница</h2>
-      <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p></section>`,
-    about: `<h2>О нас</h2><p>Smart Vision — интеллект как форма присутствия.</p>`,
-    notfound: `<h2>Страница не найдена</h2>`
+    home: `
+      <section class="main-block">
+        <h2>Главная страница</h2>
+        <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p>
+      </section>`,
+    about: `
+      <section class="main-block">
+        <h2>О нас</h2>
+        <p>Smart Vision — проект ясности, фокуса и интеллекта как формы присутствия.</p>
+      </section>`,
+    policy: `
+      <section class="main-block">
+        <h2>Политика конфиденциальности</h2>
+        <p>Smart Vision уважает вашу конфиденциальность и обрабатывает данные ответственно.</p>
+      </section>`,
+    terms: `
+      <section class="main-block">
+        <h2>Условия использования</h2>
+        <p>Используя Smart Vision, вы соглашаетесь с нашими принципами ясности и ответственности.</p>
+      </section>`,
+    contacts: `
+      <section class="main-block">
+        <h2>Контакты</h2>
+        <p>Связаться: <a href="mailto:info@smartvision.life">info@smartvision.life</a></p>
+      </section>`,
+    dashboard: `
+      <section class="main-block">
+        <h2>Личный кабинет</h2>
+        <p>Добро пожаловать в ваш Smart Vision Dashboard.</p>
+      </section>`,
+    notfound: `<section class="main-block"><h2>Страница не найдена</h2></section>`
   };
+
   root.main.innerHTML = content[STATE.page] || content.notfound;
   updateEnvButton();
 }
 
+// ---------- FOOTER ----------
 function renderFooter() {
   root.footer.innerHTML = `
     <a href="#policy">Политика конфиденциальности</a><br>
@@ -131,7 +165,7 @@ function renderFooter() {
   updateEnvButton();
 }
 
-// ========== STATE BUTTON ==========
+// ---------- STATE BUTTON ----------
 function formatState() {
   const { env, user, page, uiFlags } = STATE;
   return `{ env:${env}, user:${user ? user.name : "guest"}, page:${page}, menu:${uiFlags.menuOpen}, debug:${uiFlags.debugVisible} }`;
@@ -139,12 +173,10 @@ function formatState() {
 
 function updateEnvButton() {
   const btn = document.getElementById("env-btn");
-  if (btn) {
-    btn.textContent = formatState();
-  }
+  if (btn) btn.textContent = formatState();
 }
 
-// ========== GLOBAL EVENTS ==========
+// ---------- EVENTS ----------
 function attachGlobalEvents() {
   root.overlay.onclick = () => {
     STATE.uiFlags.menuOpen = false;
@@ -159,10 +191,18 @@ function toggleMenu() {
   updateEnvButton();
 }
 
+// ---------- HASHCHANGE ----------
 function setPageFromHash() {
   const hash = window.location.hash.replace("#", "") || "home";
   if (hash !== STATE.page) {
     STATE.page = hash;
     renderApp();
+  }
+
+  // 💡 Закрываем меню на мобильной версии при выборе страницы
+  if (STATE.env === "mobile") {
+    document.body.classList.remove("menu-open");
+    STATE.uiFlags.menuOpen = false;
+    updateEnvButton();
   }
 }
