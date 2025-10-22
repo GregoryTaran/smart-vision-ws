@@ -1,20 +1,21 @@
 :root {
-  --active-gray: #ececec;
-  --mobile-right: #f2f2f2;
+  --menu-desktop: 400px;
+  --menu-mobile: 80%;
+  --gray-bg: #f2f2f2;
 }
+
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidden; }
 
-/* контейнер всей страницы */
+/* --- БАЗА --- */
 #page-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: all 0.4s ease;
   background: #fff;
-  transition: width 0.4s ease, background 0.3s ease;
 }
 
-/* overlay для мобилы */
 #overlay {
   position: fixed;
   inset: 0;
@@ -24,49 +25,49 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; overflow-x: hidde
   transition: opacity 0.3s ease;
   z-index: 5;
 }
-body.menu-open #overlay {
-  opacity: 1;
-  pointer-events: all;
-}
+body.menu-open #overlay { opacity: 1; pointer-events: all; }
 
-/* левое меню */
 #side-menu {
   position: fixed;
   top: 0; left: 0;
-  width: 80%;
-  max-width: 400px;
   height: 100%;
   background: #fff;
   box-shadow: 3px 0 10px rgba(0,0,0,0.2);
-  transform: translateX(-100%);
-  transition: transform 0.4s ease;
   z-index: 10;
   display: flex;
   flex-direction: column;
-}
-body.menu-open #side-menu { transform: translateX(0); }
-
-/* ПК — страница сужается, мобила — двигается */
-@media (min-width: 769px) {
-  #overlay {
-    display: none;
-  }
-
-  body.menu-open #page-wrapper {
-    transform: none !important;   /* отменяем сдвиг */
-    margin-left: 400px;           /* меню “вдавливает” страницу */
-    width: calc(100% - 400px);    /* сжимает контент */
-  }
+  transition: transform 0.4s ease;
 }
 
-@media (max-width: 768px) {
-  body.menu-open #page-wrapper {
-    transform: translateX(80%);
-    background: var(--mobile-right);
-  }
+/* --- MOBILE --- */
+body[data-env="mobile"] #side-menu {
+  width: var(--menu-mobile);
+  transform: translateX(-100%);
+}
+body[data-env="mobile"].menu-open #side-menu {
+  transform: translateX(0);
+}
+body[data-env="mobile"].menu-open #page-wrapper {
+  transform: translateX(var(--menu-mobile));
+  background: var(--gray-bg);
 }
 
-/* хедер */
+/* --- DESKTOP --- */
+body[data-env="desktop"] #side-menu {
+  width: var(--menu-desktop);
+  transform: none;
+}
+body[data-env="desktop"].menu-open #page-wrapper {
+  margin-left: var(--menu-desktop);
+  width: calc(100% - var(--menu-desktop));
+}
+body[data-env="desktop"]:not(.menu-open) #page-wrapper {
+  margin-left: 0;
+  width: 100%;
+}
+#overlay { display: none; }
+
+/* header / main / footer */
 header {
   display: flex;
   align-items: center;
@@ -84,68 +85,10 @@ header {
   border: none;
   cursor: pointer;
 }
-#logo-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-#logo {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: 400px;
-}
-@media (max-width: 768px) {
-  #logo { max-width: 270px; }
-}
+#logo-wrap { display: flex; align-items: center; justify-content: center; width: 100%; }
+#logo { display: block; width: 100%; height: auto; max-width: 400px; }
+@media (max-width: 768px) { #logo { max-width: 270px; } }
 
-/* контент */
-main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  text-align: center;
-}
+main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; }
 .main-block { max-width: 720px; margin: 0 auto; }
-
-/* футер */
-footer {
-  text-align: center;
-  font-size: 14px;
-  border-top: 1px solid #ccc;
-  padding: 12px 0;
-  margin-top: auto;
-}
-
-/* меню */
-.menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0 15px;
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-}
-.menu-title { font-weight: bold; font-size: 18px; }
-.menu-close { font-size: 22px; background: none; border: none; cursor: pointer; }
-.menu-list {
-  flex: 1;
-  list-style: none;
-  margin: 0;
-  padding: 8px 0;
-  display: flex;
-  flex-direction: column;
-}
-.menu-list a {
-  display: block;
-  padding: 15px 20px;
-  text-decoration: none;
-  color: #222;
-  transition: background 0.2s ease;
-}
-.menu-list a:hover { background: #f7f7f7; }
-.menu-list a.active { background: var(--active-gray); }
+footer { text-align: center; font-size: 14px; border-top: 1px solid #ccc; padding: 12px 0; margin-top: auto; }
