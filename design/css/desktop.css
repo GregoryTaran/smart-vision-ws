@@ -1,37 +1,54 @@
-/* ======== Smart Vision Desktop (v2.9.4) ======== */
+/* ======== Smart Vision Desktop (v2.9.5 precision-fix) ======== */
 
 body[data-env="desktop"] {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* 💪 Фикс ширины меню 400px */
+/* 💪 Фикс ширины меню ровно 400px */
 body[data-env="desktop"] #side-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 400px !important;
   min-width: 400px !important;
   max-width: 400px !important;
-  transform: translateX(0);
-  left: 0;
+  height: 100vh;
   box-sizing: border-box;
+  transform: none !important;
+  transition: none !important;
+  background: #fff;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
 }
 
+/* HEADER (высота 70px, фиксирован сверху) */
 body[data-env="desktop"] header {
   position: fixed;
   top: 0;
-  left: 400px; /* точно совпадает с меню */
+  left: 400px;
   right: 0;
-  height: 60px;
+  height: 70px;
   z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
 }
 
+/* основная зона */
 body[data-env="desktop"] main {
   flex: 1;
   margin-left: 400px;
-  padding-top: 60px;
+  padding-top: 70px;   /* соответствует высоте header */
   padding-bottom: 40px;
 }
 
+/* футер прижат */
 body[data-env="desktop"] footer {
   margin-left: 400px;
   margin-top: auto;
@@ -52,10 +69,15 @@ body[data-env="desktop"] #overlay {
 body[data-env="desktop"] #menu-toggle { display: none; }
 body[data-env="desktop"] .menu-close { display: none; }
 
-/* меню */
+/* меню внутри */
 body[data-env="desktop"] .menu-header {
   background: var(--gray-bg);
   border-bottom: 1px solid #ddd;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
 }
 body[data-env="desktop"] .menu-list a:hover,
 body[data-env="desktop"] .menu-list a.active {
