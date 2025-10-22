@@ -1,4 +1,4 @@
-// ======== Smart Vision index.js v3.10.1 (restore + DOM fix) ========
+// ======== Smart Vision index.js v3.11 (restore renderMain + DOM fix) ========
 
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
@@ -70,12 +70,45 @@ function renderMenuBlock() {
 
 // ---------- MAIN ----------
 function renderMain() {
-  root.main.innerHTML = `
-    <section class="main-block">
-      <h2>Smart Vision — ясность, фокус, интеллект, свобода.</h2>
-      <p>Среда: <b>${STATE.env}</b></p>
-      <p>Страница: <b>${STATE.page}</b></p>
-    </section>`;
+  const content = {
+    home: `
+      <section class="main-block">
+        <h2>Главная страница</h2>
+        <p>Добро пожаловать в Smart Vision — место, где ясность превращается в действие.</p>
+      </section>`,
+    about: `
+      <section class="main-block">
+        <h2>О нас</h2>
+        <p>Smart Vision — проект ясности, фокуса и интеллекта как формы присутствия.</p>
+      </section>`,
+    policy: `
+      <section class="main-block">
+        <h2>Политика конфиденциальности</h2>
+        <p>Smart Vision уважает вашу конфиденциальность и обрабатывает данные ответственно.</p>
+      </section>`,
+    terms: `
+      <section class="main-block">
+        <h2>Условия использования</h2>
+        <p>Используя Smart Vision, вы соглашаетесь с нашими принципами ясности и ответственности.</p>
+      </section>`,
+    contacts: `
+      <section class="main-block">
+        <h2>Контакты</h2>
+        <p>Связаться: <a href="mailto:info@smartvision.life">info@smartvision.life</a></p>
+      </section>`,
+    dashboard: `
+      <section class="main-block">
+        <h2>Личный кабинет</h2>
+        <p>Добро пожаловать в ваш Smart Vision Dashboard.</p>
+      </section>`,
+    notfound: `
+      <section class="main-block">
+        <h2>Страница не найдена</h2>
+      </section>`
+  };
+
+  root.main.innerHTML = content[STATE.page] || content.notfound;
+  updateEnvButton();
 }
 
 // ---------- FOOTER ----------
