@@ -1,23 +1,4 @@
-/* Настройки для десктопа */
-body[data-env="desktop"] {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #fff;
-  color: var(--text-color);
-  font-family: var(--font-main);
-  line-height: 1.5;
-  overflow-x: hidden;
-}
-
-#wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  transition: transform 0.4s ease;
-}
-
-/* Левое меню */
+/* Левое меню - высокое значение z-index для гарантированного отображения */
 #side-menu {
   position: fixed;
   top: 0;
@@ -27,16 +8,31 @@ body[data-env="desktop"] {
   background: #fff;
   border-right: 1px solid #eaeaea;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-  z-index: 1000;
+  z-index: 1000;  /* Высокий z-index для меню */
   overflow-y: auto;
   transition: transform 0.4s ease;
-  transform: translateX(0);  /* Меню открыто по умолчанию */
+  transform: translateX(0);
+}
+
+/* Overlay, который должен быть ниже меню */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;  /* Менее высокий z-index для overlay */
+}
+
+body.menu-open #overlay {
+  opacity: 1;
+  pointer-events: all;
 }
 
 body.menu-open #side-menu {
-  transform: translateX(0);  /* Меню остаётся открытым */
+  transform: translateX(0);
 }
 
 body.menu-open #wrapper {
-  transform: translateX(var(--menu-desktop));  /* Сдвигаем контент */
+  transform: translateX(var(--menu-desktop)); /* Сдвигаем контент при открытом меню */
 }
