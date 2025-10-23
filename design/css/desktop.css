@@ -15,7 +15,11 @@ body[data-env="desktop"] {
   font-family: "Open Sans", system-ui, sans-serif;
   line-height: 1.5;
   overflow-x: hidden;
-  transition: transform 0.4s ease; /* сдвигаем весь body */
+}
+
+/* ---------- Контейнер оборачивает весь контент */
+#wrapper {
+  transition: transform 0.4s ease; /* плавный сдвиг */
 }
 
 /* ---------- МЕНЮ ---------- */
@@ -49,9 +53,9 @@ body[data-env="desktop"] header {
   align-items: center;
   justify-content: center;
   z-index: 9;
-  transition: transform 0.4s ease; /* добавили плавность */
 }
 
+/* кнопка меню */
 #menu-toggle {
   position: absolute;
   left: 24px;
@@ -75,7 +79,7 @@ body[data-env="desktop"] main {
   transition: transform 0.4s ease; /* плавный сдвиг */
 }
 
-/* Сдвигаем весь контент */
+/* ---------- Сдвиг контента (весь wrapper) ---------- */
 body[data-env="desktop"].menu-open #wrapper {
   transform: translateX(var(--menu-desktop)); /* сдвигаем контейнер */
 }
@@ -89,7 +93,6 @@ body[data-env="desktop"] footer {
   font-size: 14px;
   position: relative;
   z-index: 8;
-  transition: transform 0.4s ease; /* добавили плавность */
 }
 
 /* ---------- КНОПКИ И СТИЛИ ---------- */
@@ -150,4 +153,5 @@ body[data-env="desktop"] footer {
 
 /* ---------- ПРЕЛОАД ---------- */
 body.preload #side-menu {
-  transi
+  transition: none !important;
+}
