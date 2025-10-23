@@ -1,7 +1,7 @@
 /* ======== Smart Vision Desktop (v3.9 – unified visual style) ======== */
 
 :root {
-  --menu-desktop: 350px; /* обновлена ширина меню */
+  --menu-desktop: 350px;
   --gray-bg: #f2f2f2;
 }
 
@@ -15,6 +15,7 @@ body[data-env="desktop"] {
   font-family: "Open Sans", system-ui, sans-serif;
   line-height: 1.5;
   overflow-x: hidden;
+  transition: transform 0.4s ease; /* Добавили для плавности */
 }
 
 /* ---------- МЕНЮ ---------- */
@@ -48,6 +49,7 @@ body[data-env="desktop"] header {
   align-items: center;
   justify-content: center;
   z-index: 9;
+  transition: transform 0.4s ease; /* добавили плавность */
 }
 
 #menu-toggle {
@@ -71,7 +73,7 @@ body[data-env="desktop"] main {
   margin-left: var(--menu-desktop);
   padding: 100px 40px 80px;
   text-align: center;
-  transition: margin-left 0.4s ease; /* плавный переход */
+  transition: margin-left 0.4s ease;
 }
 
 body[data-env="desktop"].menu-open main {
@@ -80,20 +82,6 @@ body[data-env="desktop"].menu-open main {
 
 body[data-env="desktop"].menu-closed main {
   margin-left: 0; /* при закрытии меню контент расширяется */
-}
-
-.main-block {
-  max-width: 900px;
-  margin: 0 auto;
-}
-.main-block h2 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-.main-block p {
-  font-size: 15px;
-  margin-bottom: 12px;
 }
 
 /* ---------- FOOTER ---------- */
@@ -106,6 +94,7 @@ body[data-env="desktop"] footer {
   font-size: 14px;
   position: relative;
   z-index: 8;
+  transition: transform 0.4s ease; /* добавили плавность */
 }
 
 .env-btn {
