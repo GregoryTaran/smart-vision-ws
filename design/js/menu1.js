@@ -11,7 +11,7 @@ const PAGES = [
 ];
 
 export function renderMenu(STATE) {
-  console.log(PAGES); // Проверка данных
+  console.log("PAGES:", PAGES); // Проверка данных
 
   const menu = document.getElementById("side-menu");
   if (!menu) {
@@ -20,6 +20,7 @@ export function renderMenu(STATE) {
   }
   console.log(menu); // Проверка, что элемент меню найден
 
+  // Очищаем меню перед рендерингом
   menu.innerHTML = `
     <div class="menu-header">
       <div>МЕНЮ</div>
