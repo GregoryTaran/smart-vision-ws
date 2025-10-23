@@ -151,8 +151,10 @@ function attachGlobalEvents() {
 function toggleMenu() {
   STATE.uiFlags.menuOpen = !STATE.uiFlags.menuOpen;
   document.body.classList.toggle("menu-open", STATE.uiFlags.menuOpen);
+  document.body.classList.toggle("menu-closed", !STATE.uiFlags.menuOpen);  // Добавлено
   updateEnvButton();
 }
+
 function closeMenu() {
   STATE.uiFlags.menuOpen = false;
   document.body.classList.remove("menu-open");
