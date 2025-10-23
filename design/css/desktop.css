@@ -1,16 +1,4 @@
-/* ======== Smart Vision Desktop v2 (чистый фундамент) ======== */
-
-:root {
-  --menu-desktop: 350px;
-  --gray-bg: #f2f2f2;
-  --text-color: #111;
-  --hover-bg: #f7f7f7;
-  --active-bg: #e9e9e9;
-  --transition: 0.4s ease;
-  --font-main: "Open Sans", system-ui, sans-serif;
-}
-
-/* ---------- ОСНОВА ---------- */
+/* Настройки для десктопа */
 body[data-env="desktop"] {
   display: flex;
   flex-direction: column;
@@ -22,15 +10,14 @@ body[data-env="desktop"] {
   overflow-x: hidden;
 }
 
-/* Контейнер всего контента */
 #wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  transition: transform var(--transition);
+  transition: transform 0.4s ease;
 }
 
-/* ---------- ЛЕВОЕ МЕНЮ ---------- */
+/* Левое меню */
 #side-menu {
   position: fixed;
   top: 0;
@@ -42,123 +29,14 @@ body[data-env="desktop"] {
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
   z-index: 1000;
   overflow-y: auto;
-  transition: transform var(--transition);
-  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+  transform: translateX(-100%);  /* Меню скрыто по умолчанию */
 }
 
-/* меню открыто */
 body.menu-open #side-menu {
-  transform: translateX(0);
+  transform: translateX(0);  /* Меню появляется */
 }
 
-/* Сдвиг страницы при открытии меню */
 body.menu-open #wrapper {
-  transform: translateX(var(--menu-desktop));
-}
-
-/* ---------- ШАПКА МЕНЮ ---------- */
-#side-menu .menu-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px;
-  border-bottom: 1px solid #eee;
-  font-weight: 600;
-  font-size: 16px;
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-#side-menu .menu-header span {
-  cursor: pointer;
-  font-size: 18px;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-#side-menu .menu-header span:hover {
-  opacity: 1;
-}
-
-/* ---------- ПУНКТЫ МЕНЮ ---------- */
-#side-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-#side-menu li {
-  border-bottom: 1px solid #f0f0f0;
-}
-
-#side-menu a {
-  display: block;
-  padding: 14px 18px;
-  color: var(--text-color);
-  text-decoration: none;
-  font-size: 15px;
-  transition: background 0.25s;
-}
-
-#side-menu a:hover {
-  background: var(--hover-bg);
-}
-
-#side-menu a.active {
-  background: var(--active-bg);
-  font-weight: 600;
-}
-
-/* ---------- КОНТЕНТ ---------- */
-main {
-  flex: 1;
-  background: #fff;
-  padding: 40px;
-  transition: padding var(--transition);
-}
-
-header,
-footer {
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-  padding: 20px;
-}
-
-footer {
-  border-top: 1px solid #eee;
-  color: #666;
-}
-
-/* ---------- КНОПКИ ---------- */
-.btn {
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.btn:hover {
-  background: #333;
-}
-
-/* ---------- СЛУЖЕБНЫЕ ---------- */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.15);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition);
-  z-index: 500;
-}
-
-body.menu-open #overlay {
-  opacity: 1;
-  pointer-events: auto;
+  transform: translateX(var(--menu-desktop));  /* Сдвигаем контент */
 }

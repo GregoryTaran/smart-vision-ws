@@ -1,11 +1,4 @@
-/* ======== Smart Vision Mobile (v3.9 – menu closed by default) ======== */
-
-:root {
-  --menu-mobile: 80%;
-  --gray-bg: #f2f2f2;
-}
-
-/* ---------- ОСНОВА ---------- */
+/* Настройки для мобильных */
 body[data-env="mobile"] {
   display: flex;
   flex-direction: column;
@@ -17,36 +10,6 @@ body[data-env="mobile"] {
   overflow-x: hidden;
 }
 
-/* ---------- ХЕДЕР ---------- */
-body[data-env="mobile"] header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-  border-bottom: 1px solid #ddd;
-  background: #fff;
-  position: relative;
-  z-index: 11; /* шапка ниже меню и overlay */
-}
-
-#menu-toggle {
-  position: absolute;
-  left: 16px;
-  font-size: 24px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-#logo {
-  display: block;
-  max-width: 220px;
-  margin: 0 auto;
-  height: auto;
-  object-fit: contain;
-}
-
-/* ---------- МЕНЮ ---------- */
 #side-menu {
   width: var(--menu-mobile);
   height: 100vh;
@@ -54,122 +17,17 @@ body[data-env="mobile"] header {
   top: 0;
   left: 0;
   background: #fff;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-  transform: translateX(-100%);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);  /* Меню скрыто по умолчанию */
   transition: transform 0.4s ease;
-  z-index: 1000; /* 🔼 меню всегда поверх всего на мобиле */
+  z-index: 1000;
 }
 
 body[data-env="mobile"].menu-open #side-menu {
-  transform: translateX(0);
+  transform: translateX(0);  /* Меню появляется */
 }
 
-/* overlay */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.15);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 999; /* 🔼 overlay ниже меню, но выше шапки/контента */
-}
 body[data-env="mobile"].menu-open #overlay {
   opacity: 1;
   pointer-events: all;
-}
-
-/* ---------- ОСНОВНОЙ КОНТЕНТ ---------- */
-body[data-env="mobile"] main {
-  flex: 1 0 auto;
-  padding: 30px 20px 80px;
-  text-align: center;
-}
-.main-block {
-  max-width: 600px;
-  margin: 0 auto;
-}
-.main-block h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-.main-block p {
-  font-size: 15px;
-  margin-bottom: 12px;
-}
-
-/* ---------- ФУТЕР ---------- */
-body[data-env="mobile"] footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  border-top: 1px solid #ddd;
-  background: #fff;
-  padding: 12px 0;
-  text-align: center;
-  font-size: 14px;
-  z-index: 9;
-}
-
-.env-btn {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #fff;
-  color: #000;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.env-btn:hover {
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* ---------- МЕНЮ СПИСОК ---------- */
-.menu-header {
-  font-weight: bold;
-  padding: 16px;
-  border-bottom: 1px solid #eee;
-  background: #fafafa;
-}
-.menu-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.menu-list a {
-  display: block;
-  padding: 14px 18px;
-  color: #000;
-  text-decoration: none;
-  font-size: 16px;
-  border-bottom: 1px solid #f1f1f1;
-  transition: background 0.25s;
-}
-.menu-list a:hover {
-  background: #f8f8f8;
-}
-.menu-list a.active {
-  background: #eaeaea;
-  font-weight: bold;
-}
-.menu-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  font-size: 18px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* ---------- ПРЕЛОАД ---------- */
-body.preload #side-menu {
-  transition: none !important; /* без анимации до инициализации JS */
 }
