@@ -1,11 +1,24 @@
 // menu1.js
 
-import { PAGES } from "./config.js";
+// Массив страниц внутри menu1.js
+const PAGES = [
+  { id: "home", label: "Главная" },
+  { id: "privacy", label: "Политика конфиденциальности" },
+  { id: "terms", label: "Условия использования" },
+  { id: "about", label: "О нас" },
+  { id: "contacts", label: "Контакты" },
+  { id: "dashboard", label: "Личный кабинет" }
+];
 
-// Функция рендера меню
 export function renderMenu(STATE) {
+  console.log(PAGES); // Проверка данных
+
   const menu = document.getElementById("side-menu");
-  if (!menu) return;
+  if (!menu) {
+    console.error("Меню не найдено!");
+    return;
+  }
+  console.log(menu); // Проверка, что элемент меню найден
 
   menu.innerHTML = `
     <div class="menu-header">
@@ -16,6 +29,12 @@ export function renderMenu(STATE) {
   `;
 
   const list = menu.querySelector(".menu-list");
+
+  // Проверка на пустой PAGES
+  if (PAGES.length === 0) {
+    list.innerHTML = `<li>Нет страниц для отображения</li>`;
+    return;
+  }
 
   // Генерируем пункты меню из массива PAGES
   PAGES.forEach(page => {
@@ -28,14 +47,9 @@ export function renderMenu(STATE) {
     if (STATE.page === page.id) a.classList.add("active");
 
     a.addEventListener("click", () => {
-      // Обновляем STATE
       STATE.page = page.id;
-
-      // Визуально обновляем активный пункт
       document.querySelectorAll("#side-menu a").forEach(el => el.classList.remove("active"));
       a.classList.add("active");
-
-      // Закрываем меню
       document.body.classList.remove("menu-open");
     });
 

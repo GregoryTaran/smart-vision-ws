@@ -28,6 +28,7 @@
         const app = document.createElement("script");
         app.type = "module";
         app.src = "js/index.js";
+        app.onload = () => console.log("index.js загружен");
         document.head.appendChild(app);
       };
       document.head.appendChild(envStyle);

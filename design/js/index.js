@@ -25,7 +25,7 @@ function detectEnvironment() {
 // ======== ИНИЦИАЛИЗАЦИЯ ========
 function init() {
   detectEnvironment();
-  renderMenuBlock();
+  renderMenuBlock(); // создаём меню
   renderPage();
   setupMenuButton();
   setupHashChange();
