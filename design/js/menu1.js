@@ -32,7 +32,7 @@ export function renderMenu(STATE) {
 
   // Проверка на пустой PAGES
   if (PAGES.length === 0) {
-    list.innerHTML = `<li>Нет страниц для отображения</li>`;
+    list.innerHTML = "<li>Нет страниц для отображения</li>";
     return;
   }
 
