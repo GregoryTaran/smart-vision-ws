@@ -24,6 +24,7 @@ function init() {
   root.main = document.getElementById("content");
   root.footer = document.getElementById("footer");
   root.overlay = document.getElementById("overlay");
+  root.wrapper = document.getElementById("wrapper");
 
   document.body.dataset.env = STATE.env;
 
@@ -135,6 +136,7 @@ function formatState() {
   const { env, user, page, uiFlags } = STATE;
   return `{ env:${env}, user:${user ? user.name : "guest"}, page:${page}, menu:${uiFlags.menuOpen} }`;
 }
+
 function updateEnvButton() {
   const btn = document.getElementById("env-btn");
   if (btn) btn.textContent = formatState();

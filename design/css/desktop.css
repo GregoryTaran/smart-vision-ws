@@ -30,7 +30,7 @@ body[data-env="desktop"] {
   width: var(--menu-desktop);
   height: 100vh;
   background: #fff;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
   transform: translateX(-100%);
   transition: transform 0.4s ease;
   z-index: 10;
@@ -106,12 +106,12 @@ body[data-env="desktop"] footer {
   color: #000;
   border: 1px solid #ccc;
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 .env-btn:hover {
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* ---------- МЕНЮ СПИСОК ---------- */
