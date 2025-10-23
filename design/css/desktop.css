@@ -49,6 +49,7 @@ body[data-env="desktop"] header {
   align-items: center;
   justify-content: center;
   z-index: 9;
+  transition: transform 0.4s ease; /* добавили плавность */
 }
 
 #menu-toggle {
@@ -71,15 +72,12 @@ body[data-env="desktop"] header {
 body[data-env="desktop"] main {
   padding: 100px 40px 80px;
   text-align: center;
-  transition: margin-left 0.4s ease; /* плавный сдвиг */
+  transition: transform 0.4s ease; /* плавный сдвиг */
 }
 
-body[data-env="desktop"].menu-open main {
-  margin-left: var(--menu-desktop); /* сдвиг контента на ширину меню */
-}
-
-body[data-env="desktop"].menu-closed main {
-  margin-left: 0; /* при закрытии меню контент расширяется */
+/* Сдвигаем весь контент */
+body[data-env="desktop"].menu-open #wrapper {
+  transform: translateX(var(--menu-desktop)); /* сдвигаем контейнер */
 }
 
 /* ---------- FOOTER ---------- */
@@ -91,8 +89,10 @@ body[data-env="desktop"] footer {
   font-size: 14px;
   position: relative;
   z-index: 8;
+  transition: transform 0.4s ease; /* добавили плавность */
 }
 
+/* ---------- КНОПКИ И СТИЛИ ---------- */
 .env-btn {
   display: inline-block;
   margin-top: 8px;
@@ -150,5 +150,4 @@ body[data-env="desktop"] footer {
 
 /* ---------- ПРЕЛОАД ---------- */
 body.preload #side-menu {
-  transition: none !important;
-}
+  transi
