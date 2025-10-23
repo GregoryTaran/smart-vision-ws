@@ -1,10 +1,13 @@
+// Импорт функции renderMenu из menu1.js
+import { renderMenu } from './menu1.js';
+
 // Глобальные состояния
 const STATE = {
   env: null, 
   user: null,
   page: "home",
   uiFlags: {
-    menuOpen: true, // Меню всегда открыто по дефолту
+    menuOpen: true, // Меню открыто по дефолту
   },
 };
 
