@@ -1,26 +1,50 @@
-// ======== Smart Vision /design — Меню (v2) ========
+// ======== Smart Vision Desktop v2 Menu System (динамическая версия) ========
 
-import { CONFIG } from "./config.js";
+import { PAGES } from "./config.js";
 
-export function renderMenu(activePage = "home", user = null) {
-  const { PAGES } = CONFIG;
-  const menuItems = PAGES
-    .filter(p => (user ? true : p.id !== "dashboard")) // скрываем кабинет, если не вошёл
-    .map(
-      p => `
-      <li>
-        <a href="#${p.id}" data-page="${p.id}" class="${p.id === activePage ? "active" : ""}">
-          ${p.label}
-        </a>
-      </li>`
-    )
-    .join("");
+export function renderMenu(STATE) {
+  const menu = document.getElementById("side-menu");
+  if (!menu) return;
 
-  return `
+  menu.innerHTML = `
     <div class="menu-header">
-      <span class="menu-title">МЕНЮ</span>
-      <button id="menu-close" class="menu-close" aria-label="Закрыть меню">←</button>
+      <div>МЕНЮ</div>
+      <span id="menu-close">←</span>
     </div>
-    <ul class="menu-list">${menuItems}</ul>
+    <ul class="menu-list"></ul>
   `;
+
+  const list = menu.querySelector(".menu-list");
+
+  // генерируем пункты меню из массива PAGES
+  PAGES.forEach(page => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.textContent = page.title;
+    a.href = `#${page.id}`;
+
+    // активная страница
+    if (STATE.page === page.id) a.classList.add("active");
+
+    a.addEventListener("click", () => {
+      // обновляем STATE
+      STATE.page = page.id;
+
+      // визуально обновляем активный пункт
+      document.querySelectorAll("#side-menu a").forEach(el => el.classList.remove("active"));
+      a.classList.add("active");
+
+      // закрываем меню
+      document.body.classList.remove("menu-open");
+    });
+
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  // обработчик закрытия меню
+  const closeBtn = menu.querySelector("#menu-close");
+  closeBtn.addEventListener("click", () => {
+    document.body.classList.remove("menu-open");
+  });
 }
