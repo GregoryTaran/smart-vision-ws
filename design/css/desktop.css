@@ -30,11 +30,11 @@ body[data-env="desktop"] {
   z-index: 1000;
   overflow-y: auto;
   transition: transform 0.4s ease;
-  transform: translateX(-100%);  /* Меню скрыто по умолчанию */
+  transform: translateX(0);  /* Меню открыто по умолчанию */
 }
 
 body.menu-open #side-menu {
-  transform: translateX(0);  /* Меню появляется */
+  transform: translateX(0);  /* Меню остаётся открытым */
 }
 
 body.menu-open #wrapper {

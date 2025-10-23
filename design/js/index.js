@@ -4,7 +4,7 @@ const STATE = {
   user: null,
   page: "home",
   uiFlags: {
-    menuOpen: false, // Изначально меню закрыто
+    menuOpen: true, // Меню всегда открыто по дефолту
   },
 };
 
