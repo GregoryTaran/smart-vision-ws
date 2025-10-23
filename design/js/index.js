@@ -25,18 +25,16 @@ function detectEnvironment() {
 // ======== ИНИЦИАЛИЗАЦИЯ ========
 function init() {
   detectEnvironment();
-  renderMenuBlock(); // создаём меню
+  renderMenuBlock();
   renderPage();
   setupMenuButton();
   setupHashChange();
   console.log(`✅ Smart Vision UI запущен в режиме: ${STATE.env}`);
 }
 
-// ======== РЕНДЕР МЕНЮ (исправлено) ========
+// ======== РЕНДЕР МЕНЮ ========
 function renderMenuBlock() {
-  // раньше здесь затирался DOM, теперь просто рендерим меню внутрь #side-menu
-  renderMenu(STATE);
-
+  renderMenu(STATE); // формирует “коробку” меню внутри <nav id="side-menu">
   const closeBtn = document.getElementById("menu-close");
   if (closeBtn) closeBtn.onclick = closeMenu;
 }
@@ -90,5 +88,9 @@ window.addEventListener("resize", () => {
   }
 });
 
-// ======== СТАРТ ПРИ ЗАГРУЗКЕ ========
-document.addEventListener("DOMContentLoaded", init);
+// ======== СТАРТ ПОСЛЕ ГОТОВНОСТИ DOM ========
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
