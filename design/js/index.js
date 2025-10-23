@@ -1,9 +1,9 @@
 // ======== Smart Vision / design v2 — Index Controller ========
 
-// 🔹 Импорт динамического меню (новый модуль)
+// 🔹 Импорт динамического меню
 import { renderMenu } from "./menu1.js";
 
-// ======== ТВОЙ ОСНОВНОЙ STATE ========
+// ======== ГЛОБАЛЬНОЕ СОСТОЯНИЕ ========
 const STATE = {
   env: null, // 'desktop' | 'mobile'
   user: null,
@@ -22,19 +22,21 @@ function detectEnvironment() {
   document.body.dataset.env = STATE.env;
 }
 
-// ======== ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ========
+// ======== ИНИЦИАЛИЗАЦИЯ ========
 function init() {
   detectEnvironment();
-  renderMenuBlock(); // меню создаётся динамически
+  renderMenuBlock(); // создаём меню
   renderPage();
   setupMenuButton();
   setupHashChange();
   console.log(`✅ Smart Vision UI запущен в режиме: ${STATE.env}`);
 }
 
-// ======== РЕНДЕР МЕНЮ (обновлено) ========
+// ======== РЕНДЕР МЕНЮ (исправлено) ========
 function renderMenuBlock() {
-  renderMenu(STATE); // формирует “коробку” меню внутри <nav id="side-menu">
+  // раньше здесь затирался DOM, теперь просто рендерим меню внутрь #side-menu
+  renderMenu(STATE);
+
   const closeBtn = document.getElementById("menu-close");
   if (closeBtn) closeBtn.onclick = closeMenu;
 }
@@ -69,13 +71,13 @@ function closeMenu() {
   document.body.classList.remove("menu-open");
 }
 
-// ======== ОБРАБОТКА ПЕРЕХОДОВ ПО СТРАНИЦАМ ========
+// ======== ИЗМЕНЕНИЕ СТРАНИЦ ПРИ HASHCHANGE ========
 function setupHashChange() {
   window.addEventListener("hashchange", () => {
     const newPage = location.hash.replace("#", "");
     if (newPage) STATE.page = newPage;
     renderPage();
-    renderMenuBlock(); // обновляем активный пункт
+    renderMenuBlock(); // обновляем активный пункт меню
   });
 }
 
