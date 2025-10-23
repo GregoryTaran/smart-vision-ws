@@ -1,5 +1,3 @@
-// menu1.js
-
 // Массив страниц внутри menu1.js
 const PAGES = [
   { id: "home", label: "Главная" },
@@ -18,7 +16,6 @@ export function renderMenu(STATE) {
     console.error("Меню не найдено!");
     return;
   }
-  console.log(menu); // Проверка, что элемент меню найден
 
   // Очищаем меню перед рендерингом
   menu.innerHTML = `
