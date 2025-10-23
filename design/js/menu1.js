@@ -1,7 +1,8 @@
-// ======== Smart Vision Desktop v2 Menu System (динамическая версия) ========
+// menu1.js
 
 import { PAGES } from "./config.js";
 
+// Функция рендера меню
 export function renderMenu(STATE) {
   const menu = document.getElementById("side-menu");
   if (!menu) return;
@@ -16,25 +17,25 @@ export function renderMenu(STATE) {
 
   const list = menu.querySelector(".menu-list");
 
-  // генерируем пункты меню из массива PAGES
+  // Генерируем пункты меню из массива PAGES
   PAGES.forEach(page => {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.textContent = page.title;
+    a.textContent = page.label;
     a.href = `#${page.id}`;
 
-    // активная страница
+    // Активный пункт
     if (STATE.page === page.id) a.classList.add("active");
 
     a.addEventListener("click", () => {
-      // обновляем STATE
+      // Обновляем STATE
       STATE.page = page.id;
 
-      // визуально обновляем активный пункт
+      // Визуально обновляем активный пункт
       document.querySelectorAll("#side-menu a").forEach(el => el.classList.remove("active"));
       a.classList.add("active");
 
-      // закрываем меню
+      // Закрываем меню
       document.body.classList.remove("menu-open");
     });
 
@@ -42,7 +43,7 @@ export function renderMenu(STATE) {
     list.appendChild(li);
   });
 
-  // обработчик закрытия меню
+  // Обработчик закрытия меню
   const closeBtn = menu.querySelector("#menu-close");
   closeBtn.addEventListener("click", () => {
     document.body.classList.remove("menu-open");

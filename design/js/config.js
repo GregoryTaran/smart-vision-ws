@@ -1,4 +1,4 @@
-// ======== Smart Vision CONFIG (v2) ========
+// config.js
 
 export const CONFIG = {
   BASE_URL: "https://test.smartvision.life/",
@@ -15,3 +15,6 @@ export const CONFIG = {
     { id: "dashboard", label: "Личный кабинет" }
   ]
 };
+
+// Экспортируем PAGES отдельно
+export const PAGES = CONFIG.PAGES;
