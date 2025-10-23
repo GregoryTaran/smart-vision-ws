@@ -1,7 +1,7 @@
 /* ======== Smart Vision Desktop (v3.9 – unified visual style) ======== */
 
 :root {
-  --menu-desktop: 400px;
+  --menu-desktop: 400px; /* обновлена ширина меню */
   --gray-bg: #f2f2f2;
 }
 
@@ -71,7 +71,17 @@ body[data-env="desktop"] main {
   margin-left: var(--menu-desktop);
   padding: 100px 40px 80px;
   text-align: center;
+  transition: margin-left 0.4s ease; /* плавный переход */
 }
+
+body[data-env="desktop"].menu-open main {
+  margin-left: var(--menu-desktop); /* сдвиг контента на ширину меню */
+}
+
+body[data-env="desktop"].menu-closed main {
+  margin-left: 0; /* при закрытии меню контент расширяется */
+}
+
 .main-block {
   max-width: 900px;
   margin: 0 auto;
