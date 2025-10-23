@@ -1,5 +1,3 @@
-// ======== Smart Vision index.js v3.9 (menu closed by default) ========
-
 import { CONFIG } from "./config.js";
 import { renderMenu } from "./menu1.js";
 
