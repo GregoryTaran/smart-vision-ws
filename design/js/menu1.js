@@ -9,7 +9,7 @@ const PAGES = [
 ];
 
 export function renderMenu(STATE) {
-  console.log("PAGES:", PAGES); // Проверка данных
+  console.log("PAGES:", PAGES); // Логирование массива PAGES
 
   const menu = document.getElementById("side-menu");
   if (!menu) {
@@ -43,7 +43,7 @@ export function renderMenu(STATE) {
 
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.textContent = page.label;  // Убедись, что это правильный текст
+    a.textContent = page.label;
     a.href = `#${page.id}`;
 
     console.log(`Добавление пункта меню: ${page.label}`);  // Лог для диагностики
@@ -67,4 +67,6 @@ export function renderMenu(STATE) {
   closeBtn.addEventListener("click", () => {
     document.body.classList.remove("menu-open");
   });
+
+  console.log("Меню успешно отрендерено");
 }

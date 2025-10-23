@@ -1,15 +1,4 @@
-/* Настройки для мобильных */
-body[data-env="mobile"] {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #fff;
-  color: #111;
-  font-family: "Open Sans", system-ui, sans-serif;
-  line-height: 1.5;
-  overflow-x: hidden;
-}
-
+/* Мобильное меню - теперь видно для отладки */
 #side-menu {
   width: var(--menu-mobile);
   height: 100vh;
@@ -18,16 +7,30 @@ body[data-env="mobile"] {
   left: 0;
   background: #fff;
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-  transform: translateX(0);  /* Меню открыто по умолчанию */
+  transform: translateX(0); /* Меню должно быть открыто по умолчанию */
   transition: transform 0.4s ease;
-  z-index: 1000;
+  z-index: 1000; /* Увеличиваем z-index для меню */
+  border: 2px solid red;  /* Визуальное выделение меню для отладки */
 }
 
 body[data-env="mobile"].menu-open #side-menu {
-  transform: translateX(0);  /* Меню остаётся открытым */
+  transform: translateX(0); /* Меню остаётся открытым */
 }
 
 body[data-env="mobile"].menu-open #overlay {
   opacity: 1;
   pointer-events: all;
+}
+
+/* Пункты меню, чтобы видеть их границы */
+.menu-list li {
+  border: 1px dashed blue;  /* Отображаем пункт меню */
+  padding: 8px;
+  margin: 4px 0;
+}
+
+/* Подсветим активный пункт меню */
+.menu-list a.active {
+  background-color: #f0f0f0;
+  color: #007bff;
 }
