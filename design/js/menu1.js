@@ -34,12 +34,19 @@ export function renderMenu(STATE) {
     return;
   }
 
-  // Генерируем пункты меню из массива PAGES
+  // Генерация пунктов меню из массива PAGES
   PAGES.forEach(page => {
+    if (!page.id || !page.label) {
+      console.error("Ошибка в данных страницы:", page);
+      return;  // Пропускаем страницы с отсутствующими id или label
+    }
+
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.textContent = page.label;
+    a.textContent = page.label;  // Убедись, что это правильный текст
     a.href = `#${page.id}`;
+
+    console.log(`Добавление пункта меню: ${page.label}`);  // Лог для диагностики
 
     // Активный пункт
     if (STATE.page === page.id) a.classList.add("active");
